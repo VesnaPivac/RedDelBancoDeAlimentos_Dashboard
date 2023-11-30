@@ -1,6 +1,7 @@
 matplotlib
 numpy
 pandas
+plotly
 pillow
 pip
 seaborn
