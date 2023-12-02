@@ -29,7 +29,7 @@ curr_year = datetime.now().year
 
 curr_year = datetime.now().year
 tiempos = ['Año Actual', 'Ultimos 3 años','Historico']
-opcion_tiempo = st.selectbox('Tiempo:', tiempos, index=0,  placeholder="Choose an option")
+opcion_tiempo = st.selectbox('Periodo:', tiempos, index=0,  placeholder="Choose an option")
 tiempos_dict = {'Año Actual':datetime.now().year,'Ultimos 3 años':[datetime.now().year,datetime.now().year-1,datetime.now().year-2]}
 if(opcion_tiempo == 'Historico'):
     df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')]
@@ -207,13 +207,31 @@ with col2_1:
 
 st.divider()
 
+col1_2, col2_2, col3_2 = st.columns([5,1,5])
 
-st.markdown(f"## Producción Anual Promedio de {opcion_cultivo}")
+with col1_2:
     
+    st.markdown(f"## Producción Anual Promedio de {opcion_cultivo} en Pesos")
 
+    cultivo_seleccionado['Precio total'] = cultivo_seleccionado['Produccion']*cultivo_seleccionado['Precio Frecuente']
 
+    resultado = cultivo_seleccionado.groupby('Entidad').agg({'Produccion': 'sum', 'Precio total': 'sum'})
+    resultado = resultado.sort_values('Precio total', ascending=False).head(10).reset_index()
 
+    # Función para resaltar la fila de 'Sonora'
+    def resaltar_sonora(row):
+        if row['Entidad'] == 'Sonora':
+            return ['background-color: #CCAAF0'] * len(row)
+        else:
+            return [''] * len(row)
 
+    # Aplicar estilo de resaltado
+    styled_table = resultado.style.apply(resaltar_sonora, axis=1)
+    styled_table = styled_table.format({'Produccion': '{:.2f}', 'Precio total': '{:.2f}'})
+    # Mostrar el DataFrame en Streamlit
+    st.write(styled_table)
 
+with col3_2:
+    st.markdown(f'## Valor de la producción de {opcion_cultivo} Total')
 
-
+st.divider()
