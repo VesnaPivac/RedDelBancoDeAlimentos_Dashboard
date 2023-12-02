@@ -75,7 +75,7 @@ with col1:
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
     prd_son = produccion_por_entidad['Sonora']
-    st.markdown(f'##### Producción total de {opcion_cultivo} en México de {str(round(produccion_total,2))} toneladas del cual Sonora aporta {str(round(prd_son,2))} toneladas')
+    st.markdown(f'##### Producción total de {opcion_cultivo} en México de {str("{:,}".format(round(produccion_total,2)))} toneladas del cual Sonora aporta {str("{:,}".format(round(prd_son,2)))} toneladas')
     # Crear un DataFrame con los datos de producción total y en Sonora
     data = {
         'Entidad': ['México', 'Sonora'],
