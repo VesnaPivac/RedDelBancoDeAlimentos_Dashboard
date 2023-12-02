@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 from datetime import datetime
+import calendar
 
 
 
@@ -75,7 +76,7 @@ with col1:
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
     prd_son = produccion_por_entidad['Sonora']
-    st.markdown(f'##### Producción total de {opcion_cultivo} en México de {str("{:,}".format(round(produccion_total,2)))} toneladas del cual Sonora aporta {str("{:,}".format(round(prd_son,2)))} toneladas')
+    st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: DimGray">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color: MediumPurple">{str("{:,}".format(round(prd_son,2)))}</span> toneladas',unsafe_allow_html=True)
     # Crear un DataFrame con los datos de producción total y en Sonora
     data = {
         'Entidad': ['México', 'Sonora'],
@@ -84,7 +85,7 @@ with col1:
     df = pd.DataFrame(data)
 
     # Definir colores para México (gris) y Sonora (morado)
-    colors = {'México': 'gray', 'Sonora': 'purple'}
+    colors = {'México': 'gray', 'Sonora': 'MediumPurple'}
 
     # Graficar utilizando Plotly Express y asignar colores específicos a cada barra
     fig = px.bar(df, x='Entidad', y='Produccion', text='Produccion',
@@ -97,10 +98,20 @@ with col1:
     st.plotly_chart(fig)
 
 
-    st.divider()
+
+with col2:
+   st.markdown(f"## Producción de {opcion_cultivo} en México")
 
 
-    st.markdown(f"### Top 3: Producción de {opcion_cultivo} por Entidad")
+st.divider()
+
+col1_1, col2_1, col3_1 = st.columns([1,3,1])
+
+with col1_1:
+   st.text("")
+with col2_1:
+   
+    st.markdown(f"## Top 3: Producción de {opcion_cultivo} por Entidad")
     st.text(f"Porcentaje con respecto a la producción total")
     data_plot = {
         'Entidad': top_3_entidades.index,
@@ -120,19 +131,91 @@ with col1:
     fig.update_yaxes(title=None)
         
     # Definir colores para todas las barras, excepto la más grande
-    colors = ['gray'] * (len(df_plot) - 1) + ['MediumPurple']  # Todas en gris excepto la más grande en morado
+    if df_plot.Entidad[0] == 'Sonora':
+        colors = ['gray'] * (len(df_plot) - 1) + ['MediumPurple']
+    else:
+        colors = ['gray'] * (len(df_plot) - 1) + ['RoyalBlue']  # Todas en gris excepto la más grande en morado
 
     # Configurar colores de las barras
     fig.update_traces(marker=dict(color=colors))
     fig.update_traces(textposition='outside', textfont=dict(color='black'))
-    fig.update_layout(height=300, width=600)
+    fig.update_layout(height=300, width=900)
+
     # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig) 
+    st.plotly_chart(fig,use_container_width=True) 
     mayor_productor = df_plot.Entidad[0] 
     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con {df_plot["Porcentaje con respecto a la producción total"][0]} de la producción total del país')
 
+with col3_1:
+    st.text("")
 
-with col2:
-   st.markdown(f"### Producción de {opcion_cultivo} en México")
+
+st.divider()
+
+col1_2, col2_2, col3_2 = st.columns([1,3,1])
+
+with col1_2:
+   st.text("")
+with col2_2:        
+    
+    # Definir el orden deseado de los meses
+    orden_meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    produccion_por_mes = cultivo_seleccionado.groupby('Mes')['Produccion'].sum().reset_index()
+
+    # Convertir la columna 'Mes' a tipo Categorical con el orden deseado
+    produccion_por_mes['Mes'] = pd.Categorical(produccion_por_mes['Mes'], categories=orden_meses, ordered=True)
+
+    # Reordenar los datos según el orden de los meses
+    produccion_por_mes = produccion_por_mes.sort_values('Mes')
+
+    # Calcular la producción total
+    produccion_total = produccion_por_mes['Produccion'].sum()
+
+     # Meses ordenados de mayor a menor produccion
+    produccion_por_mes_ordenado = produccion_por_mes.sort_values('Produccion', ascending=False)
+
+    # Seleccionar los tres meses con mayor producción
+    top_3_meses = produccion_por_mes_ordenado.head(3)['Mes'].tolist()
+
+
+    # Normalizar la producción para usarla como intensidad de color
+    produccion_normalizada = (produccion_por_mes['Produccion'] - produccion_por_mes['Produccion'].min()) / (produccion_por_mes['Produccion'].max() - produccion_por_mes['Produccion'].min())
+
+    # Crear una paleta de colores de blanco a púrpura (o cualquier color deseado)
+    colores = plt.cm.Purples(produccion_normalizada)
+
+    # Crear el gráfico de barras con colores proporcionales a la producción
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bars = ax.bar(produccion_por_mes['Mes'], produccion_por_mes['Produccion'], color=colores)
+
+    # Configurar etiquetas y título
+    ax.set_xlabel('Mes')
+    ax.set_ylabel('Producción')
+
+    # Ajustar el diseño para que los nombres de los meses se muestren correctamente
+    plt.xticks(rotation=45, ha='right')
+
+    # Agregar etiquetas de porcentaje encima de cada barra
+    for bar in bars:
+        height = bar.get_height()
+        percentage = (height / produccion_total) * 100
+        ax.annotate(f'{percentage:.2f}', xy=(bar.get_x() + bar.get_width() / 2, height), xytext=(0, 3),
+                    textcoords='offset points', ha='center', va='bottom')
+
+    # Mostrar el gráfico en Streamlit
+    st.markdown("## Producción Anual Nacional (%)")
+    st.markdown(f"Los tres meses con mayor producción son: {top_3_meses[0]}, {top_3_meses[1]} y {top_3_meses[2]}")
+
+    st.pyplot(fig)
+
+
+    
+with col3_2:
+    st.text("")
+
+
+
+
+
 
 
