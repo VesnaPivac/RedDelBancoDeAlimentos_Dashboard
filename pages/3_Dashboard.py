@@ -9,7 +9,7 @@ from datetime import datetime
 
 
 st.title('Red del Banco de Alimentos')
-st.markdown('## Producción y su actividad economica')
+st.markdown('## Producción en Sonora y su actividad economica')
 st.divider()
 
 
@@ -28,7 +28,7 @@ curr_year = datetime.now().year
 
 curr_year = datetime.now().year
 tiempos = ['Año Actual', 'Ultimos 3 años','Historico']
-opcion_tiempo = st.selectbox('Tiempo', tiempos, index=0,  placeholder="Choose an option")
+opcion_tiempo = st.selectbox('Tiempo:', tiempos, index=0,  placeholder="Choose an option")
 tiempos_dict = {'Año Actual':datetime.now().year,'Ultimos 3 años':[datetime.now().year,datetime.now().year-1,datetime.now().year-2]}
 if(opcion_tiempo == 'Historico'):
     df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')]
@@ -43,7 +43,7 @@ suma_por_cultivo = df_merge_cultivo.groupby('Cultivo')['Produccion'].sum()
 cultivos_con_produccion = suma_por_cultivo[suma_por_cultivo != 0.0].index
 
 estados = np.sort(cultivos_con_produccion)
-opcion_cultivo = st.selectbox('Cultivo', estados, index=0,  placeholder="Choose an option")
+opcion_cultivo = st.selectbox('Cultivo:', estados, index=0,  placeholder="Choose an option")
 
 
 
@@ -75,6 +75,7 @@ with col1:
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
     prd_son = produccion_por_entidad['Sonora']
+    st.markdown(f'##### Producción total de {opcion_cultivo} en México de {str(round(produccion_total,2))} toneladas del cual Sonora aporta {str(round(prd_son,2))} toneladas')
     # Crear un DataFrame con los datos de producción total y en Sonora
     data = {
         'Entidad': ['México', 'Sonora'],
@@ -119,7 +120,7 @@ with col1:
     fig.update_yaxes(title=None)
         
     # Definir colores para todas las barras, excepto la más grande
-    colors = ['gray'] * (len(df_plot) - 1) + ['purple']  # Todas en gris excepto la más grande en morado
+    colors = ['gray'] * (len(df_plot) - 1) + ['MediumPurple']  # Todas en gris excepto la más grande en morado
 
     # Configurar colores de las barras
     fig.update_traces(marker=dict(color=colors))
@@ -127,6 +128,8 @@ with col1:
     fig.update_layout(height=300, width=600)
     # Mostrar el gráfico en Streamlit
     st.plotly_chart(fig) 
+    mayor_productor = df_plot.Entidad[0] 
+    st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con {df_plot["Porcentaje con respecto a la producción total"][0]} de la producción total del país')
 
 
 with col2:
