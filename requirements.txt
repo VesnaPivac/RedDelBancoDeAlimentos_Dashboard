@@ -1,7 +1,13 @@
 matplotlib
 numpy
 pandas
-plotly-express
 pillow
 pip
 seaborn
+ipywidgets
+geopandas
+plotly-express
+scikit-learn
+pyarrow
+nbformat
+datetime
