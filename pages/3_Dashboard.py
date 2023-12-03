@@ -269,6 +269,11 @@ with col2_1:
 
     st.pyplot(fig)
 
+
+
+
+
+
 st.divider()
 
 col1_2, col2_2 = st.columns(2)
@@ -280,9 +285,12 @@ with col1_2:
     cultivo_seleccionado['Precio total'] = cultivo_seleccionado['Produccion']*cultivo_seleccionado['Precio Frecuente']
 
     resultado = cultivo_seleccionado.groupby('Entidad').agg({'Produccion': 'sum', 'Precio total': 'sum','Rendimiento': 'sum'})
-    resultado = resultado.sort_values('Precio total', ascending=False).head(10).reset_index()
+    resultado = resultado.sort_values('Precio total', ascending=False).reset_index()
     resultado['Precio total'] = resultado['Precio total'] / 1000000
+    precio_total_pais = resultado['Precio total'].sum()
+    precio_total_son = resultado.loc[resultado['Entidad']=='Sonora','Precio total'].sum()
     resultado = resultado[resultado['Precio total'] != 0]
+    resultado = resultado.head(10)
     resultado = resultado.rename(columns={'Entidad': 'Estado', 'Produccion': 'Producción', 'Precio total': 'Precio Total (MDP)'})
 
 
@@ -300,6 +308,15 @@ with col1_2:
         
     # Mostrar el DataFrame en Streamlit
     st.write(styled_table)
+
+    if opcion_tiempo == 'Historico':
+        precio_total_tiempo_txt = ' desde el 2020 hasta el año actual.'
+    elif opcion_tiempo == 'Ultimos 3 años':
+        precio_total_tiempo_txt = ' desde el ' + str(datetime.now().year - 2) + ' hasta el año actual.'
+    elif opcion_tiempo == 'Año Actual':
+        precio_total_tiempo_txt = ' en el año actual ' + str(datetime.now().year) + '.'
+
+    st.markdown(f'##### La producción total de {opcion_cultivo} en todo México es de {round(precio_total_pais,4)} MDP del cual Sonora ha aportado <span style="color: #9867CB">{round(precio_total_son,4)}</span> MDP{precio_total_tiempo_txt}',unsafe_allow_html=True)
 
 with col2_2:
     st.markdown(f'## Valor de la producción total de {opcion_cultivo} en Sonora')
