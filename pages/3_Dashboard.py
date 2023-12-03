@@ -70,6 +70,7 @@ with col1:
     # Seleccionar solo los primeros 3 elementos con mayor producción
     top_3_entidades = produccion_por_entidad.head(3)
 
+
     # Calcular el porcentaje de la producción de cada entidad con respecto a la producción total
     porcentaje_total = (top_3_entidades / produccion_total) * 100
     
@@ -78,7 +79,7 @@ with col1:
     pct_mexico_son_text = str(round(pct_mexico_son,2))+"%"
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
-    st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: #272F7C">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color: MediumPurple">{str("{:,}".format(round(prd_son,2)))}</span> toneladas que equivale al <span style="color: #9867CB">{pct_mexico_son_text}</span> del total',unsafe_allow_html=True)
+    st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: #272F7C">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color: #9867CB">{str("{:,}".format(round(prd_son,2)))}</span> toneladas que equivale al <span style="color: #9867CB">{pct_mexico_son_text}</span> del total',unsafe_allow_html=True)
     # Crear un DataFrame con los datos de producción total y en Sonora
     data = {
         'Entidad': ['México', 'Sonora'],
@@ -113,7 +114,6 @@ st.divider()
 col1_1, col2_1 = st.columns(2)
 
 with col1_1:
-   
     st.markdown(f"## Top 3: Producción de {opcion_cultivo} por Entidad")
     st.text(f"Porcentaje con respecto a la producción total")
     data_plot = {
@@ -200,38 +200,122 @@ with col2_1:
                     textcoords='offset points', ha='center', va='bottom')
 
     # Mostrar el gráfico en Streamlit
-    st.markdown("## Producción Anual Nacional (%)")
+    st.markdown("## Producción Nacional (%)")
     st.markdown(f"###### La mayor producción de {opcion_cultivo} se obtiene de los meses de {top_3_meses[0]}, {top_3_meses[1]} y {top_3_meses[2]}")
 
     st.pyplot(fig)
 
 st.divider()
 
-col1_2, col2_2, col3_2 = st.columns([5,1,5])
+col1_2, col2_2 = st.columns(2)
 
 with col1_2:
     
-    st.markdown(f"## Producción Anual Promedio de {opcion_cultivo} en Pesos")
+    st.markdown(f"## Producción Promedio de {opcion_cultivo} en Pesos")
 
     cultivo_seleccionado['Precio total'] = cultivo_seleccionado['Produccion']*cultivo_seleccionado['Precio Frecuente']
 
-    resultado = cultivo_seleccionado.groupby('Entidad').agg({'Produccion': 'sum', 'Precio total': 'sum'})
+    resultado = cultivo_seleccionado.groupby('Entidad').agg({'Produccion': 'sum', 'Precio total': 'sum','Rendimiento': 'sum'})
     resultado = resultado.sort_values('Precio total', ascending=False).head(10).reset_index()
+    resultado['Precio total'] = resultado['Precio total'] / 1000000
+    resultado = resultado[resultado['Precio total'] != 0]
+    resultado = resultado.rename(columns={'Entidad': 'Estado', 'Produccion': 'Producción', 'Precio total': 'Precio Total (MDP)'})
+
+
 
     # Función para resaltar la fila de 'Sonora'
     def resaltar_sonora(row):
-        if row['Entidad'] == 'Sonora':
-            return ['background-color: #CCAAF0'] * len(row)
+        if row['Estado'] == 'Sonora':
+            return ['background-color: #E8D7FA'] * len(row)
         else:
             return [''] * len(row)
 
     # Aplicar estilo de resaltado
     styled_table = resultado.style.apply(resaltar_sonora, axis=1)
-    styled_table = styled_table.format({'Produccion': '{:.2f}', 'Precio total': '{:.2f}'})
+    styled_table = styled_table.format({'Producción': '{:.2f}', 'Precio Total (MDP)': '{:.4f}','Rendimiento':'{:.2f}'})
+        
     # Mostrar el DataFrame en Streamlit
     st.write(styled_table)
 
-with col3_2:
-    st.markdown(f'## Valor de la producción de {opcion_cultivo} Total')
+with col2_2:
+    st.markdown(f'## Valor de la producción total de {opcion_cultivo} en Sonora')
+    meses = {'Enero': 1, 'Febrero': 2, 'Marzo': 3, 'Abril': 4, 'Mayo': 5, 'Junio': 6,'Julio': 7, 'Agosto': 8, 'Septiembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12}
+    
+    df_merge_valor_produccion = df_merge.loc[(df_merge['Entidad']=='Sonora')&(df_merge['Cultivo']==opcion_cultivo)]
+    df_merge_valor_produccion['Precio total'] = df_merge_valor_produccion['Produccion'] * df_merge_valor_produccion['Precio Frecuente']
+    df_merge_valor_produccion['Mes'] = df_merge_valor_produccion['Mes'].map(meses)
+    df_merge_valor_produccion['Fecha'] = pd.to_datetime(df_merge_valor_produccion['Año'].astype(str) + '-' + df_merge_valor_produccion['Mes'].astype(str))
+
+    # Ordenar por fecha para asegurarse de que los datos estén en orden temporal
+    df_merge_valor_produccion = df_merge_valor_produccion.sort_values('Fecha')
+    
+    tab1, tab2, tab3= st.tabs(["Producción","Precio Total","Rendimiento"])
+    
+    tab1.subheader("Producción total a lo largo del tiempo")
+    fig = px.line(df_merge_valor_produccion, x='Fecha', y='Produccion', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
+    fig.update_layout(
+        xaxis_title='Fecha',
+        yaxis_title='Producción',
+        xaxis=dict(tickangle=45),
+        showlegend=False
+    )
+    tab1.plotly_chart(fig)
+
+    tab2.subheader("Precio Total en Millones de Pesos (MDP) a lo largo del tiempo")
+    df_merge_valor_produccion['Precio total'] = round((df_merge_valor_produccion['Precio total']/1000000),2)
+
+    fig = px.line(df_merge_valor_produccion, x='Fecha', y='Precio total', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
+    fig.update_layout(
+        xaxis_title='Fecha',
+        yaxis_title='Precio Total (MDP)',
+        xaxis=dict(tickangle=45),
+        showlegend=False
+    )
+    tab2.plotly_chart(fig)
+
+    
+    tab3.subheader("Rendimiento total a lo largo del tiempo")
+    fig = px.line(df_merge_valor_produccion, x='Fecha', y='Rendimiento', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
+    fig.update_layout(
+        xaxis_title='Fecha',
+        yaxis_title='Rendimiento',
+        xaxis=dict(tickangle=45),
+        showlegend=False
+    )
+    tab3.plotly_chart(fig)
+
 
 st.divider()
+
+
+col1_3, col2_3 = st.columns(2)
+
+with col1_3:
+    st.markdown(f'## Cultivo de {opcion_cultivo} en el estado de Sonora por municipios')
+
+    df_municipio = pd.read_parquet('./data/Municipios.parquet')
+
+    if(opcion_tiempo == 'Historico'):
+        df_municipio = df_municipio[df_municipio['Cultivo'] == opcion_cultivo]
+    elif(opcion_tiempo == 'Ultimos 3 años'):
+        df_municipio = df_municipio[(df_municipio['Cultivo'] == opcion_cultivo)&(df_municipio['Año'].isin(tiempos_dict[opcion_tiempo]))]
+    elif(opcion_tiempo == 'Año Actual'):
+        df_municipio = df_municipio[(df_municipio['Cultivo'] == opcion_cultivo)&(df_municipio['Año']==curr_year)]
+        
+    # Filtramos para solo con valores de Produccion (%) mayores a cero para poder usar una escala de colores continua en el treemap
+    df_municipio = df_municipio[df_municipio['Produccion (%)'] > 0]
+
+    # Crear el treemap con plotly express
+    fig = px.treemap(df_municipio,
+                    path=["Entidad","Municipio"],
+                    values="Produccion (%)",
+                    color_discrete_map={'Entidad': "white"},  # Asignar blanco al      
+                    width=650, height=600
+                    )
+
+    fig.update_traces(root_color="whitesmoke")
+
+    st.plotly_chart(fig)
+
+with col2_3:
+    st.markdown(f"")
