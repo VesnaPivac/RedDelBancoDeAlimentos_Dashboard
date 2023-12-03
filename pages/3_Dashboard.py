@@ -397,16 +397,32 @@ with col2_2:
 
 st.divider()
 
-col1_4, col2_4 = st.columns(2)
+col1_4, col2_4,col3_4 = st.columns([2,5,2])
 
-with col1_4:
-    st.markdown(f'## Superficie Siniestrada en Sonora')
-    # cultivo_seleccionado = Cultivo y fecha
-    # cultivo_seleccionado['Precio Total Siniestrado'] = cultivo_seleccionado['Produccion siniestrada'] * cultivo_seleccionado['Rendimiento'] * cultivo_seleccionado['precio_frecuente']
+with col2_4:
+    st.markdown(f'## Superficie Sembrada vs Cosechada de {opcion_cultivo} en Sonora')
+    #Cultivo y año    
+    sembrada_vs_cosechada = cultivo_seleccionado.loc[cultivo_seleccionado['Entidad'] == 'Sonora']
+  
+    sembrada_vs_cosechada['Mes'] = sembrada_vs_cosechada['Mes'].map(meses)
+    sembrada_vs_cosechada['Fecha'] = pd.to_datetime(sembrada_vs_cosechada['Año'].astype(str) + '-' + sembrada_vs_cosechada['Mes'].astype(str))
 
+    # Ordenar por fecha para asegurarse de que los datos estén en orden temporal
+    sembrada_vs_cosechada = sembrada_vs_cosechada.sort_values('Fecha')
+    
+        
+    # Graficar con Plotly Express
+    fig = px.line(sembrada_vs_cosechada, x='Fecha', y=['Superficie Siniestrada','Superficie Cosechada', 'Superficie Sembrada'], 
+                labels={'Fecha': 'Fecha', 'value': 'Superficie (unidades)'})
 
+    # Configuraciones adicionales si es necesario
+    fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (unidades)', legend_title='Tipo de Superficie')
+    fig.update_traces(mode='lines')
 
-# with col2_4:
+    # Mostrar la figura en Streamlit
+    st.plotly_chart(fig)
+    
+
 
 
 
@@ -448,5 +464,24 @@ with col1_3:
     st.plotly_chart(fig)
 
 with col2_3:
-    st.markdown(f"")
+    st.markdown(f'## Superficie Sembrada vs Cosechada de {opcion_cultivo} por municipio')
+    #Cultivo y año    
+    df_municipio = pd.read_parquet('./data/Municipios.parquet')
+    sembrada_vs_cosechada = df_municipio.copy()
+
+    municipio_menu = sembrada_vs_cosechada['Municipio'].unique()
+    opcion_mun = st.selectbox('Municipio:', municipio_menu, index=0,  placeholder="Choose an option")
+
+    sembrada_vs_cosechada = sembrada_vs_cosechada.loc[sembrada_vs_cosechada['Municipio']==opcion_mun]
+        
+    # Graficar con Plotly Express
+    fig = px.line(sembrada_vs_cosechada, x='Año', y=['Superficie Siniestrada', 'Superficie Sembrada','Superficie Cosechada'], 
+                labels={'Fecha': 'Fecha', 'value': 'Superficie (unidades)'})
+
+    # Configuraciones adicionales si es necesario
+    fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (unidades)', legend_title='Tipo de Superficie')
+    fig.update_traces(mode='lines')
+
+    # Mostrar la figura en Streamlit
+    st.plotly_chart(fig)
 
