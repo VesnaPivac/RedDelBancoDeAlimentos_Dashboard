@@ -83,7 +83,7 @@ with col1:
     pct_mexico_son_text = str(round(pct_mexico_son,2))+"%"
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
-    st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: #272F7C">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color: #9867CB">{str("{:,}".format(round(prd_son,2)))}</span> toneladas que equivale al <span style="color: #9867CB">{pct_mexico_son_text}</span> del total',unsafe_allow_html=True)
+    st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: #272F7C">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color: #9867CB">{str("{:,}".format(round(prd_son,2)))}</span> toneladas del total.',unsafe_allow_html=True)
     # Crear un DataFrame con los datos de producción total y en Sonora
     data = {
         'Entidad': ['México', 'Sonora'],
@@ -236,7 +236,7 @@ with col1_1:
     if(mayor_productor == 'Sonora'):
         st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #9867CB">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país',unsafe_allow_html=True)
     else:
-        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país',unsafe_allow_html=True)
+        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país mientras que Sonora aporta el <span style="color: #9867CB">{pct_mexico_son_text}</span> del total de producción.',unsafe_allow_html=True)
 
 with col2_1:
         
@@ -400,7 +400,7 @@ st.divider()
 col1_4, col2_4,col3_4 = st.columns([2,5,2])
 
 with col2_4:
-    st.markdown(f'## Superficie Sembrada vs Cosechada de {opcion_cultivo} en Sonora')
+    st.markdown(f'## Superficie Sembrada, Cosechada y Siniestrada de {opcion_cultivo} en Sonora')
     #Cultivo y año    
     sembrada_vs_cosechada = cultivo_seleccionado.loc[cultivo_seleccionado['Entidad'] == 'Sonora']
   
@@ -464,7 +464,7 @@ with col1_3:
     st.plotly_chart(fig)
 
 with col2_3:
-    st.markdown(f'## Superficie Sembrada vs Cosechada de {opcion_cultivo} por municipio')
+    st.markdown(f'## Superficie Sembrada, Cosechada y Siniestrada de {opcion_cultivo} por municipio')
     #Cultivo y año    
     df_municipio = pd.read_parquet('./data/Municipios.parquet')
     sembrada_vs_cosechada = df_municipio.copy()
