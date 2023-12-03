@@ -6,6 +6,7 @@ import seaborn as sns
 import plotly.express as px
 from datetime import datetime
 import calendar
+import requests
 
 
 
@@ -105,7 +106,70 @@ with col1:
 
 
 with col2:
-   st.markdown(f"## Producción de {opcion_cultivo} en México")
+    st.markdown(f"## Producción de {opcion_cultivo} en México")
+    
+    df_estados = pd.read_parquet('./data/Estados.parquet')
+    if opcion_tiempo == 'Año Actual':
+        df_filtered = df_estados[(df_estados['Año'] == curr_year)&(df_estados['Cultivo'] == opcion_cultivo)]
+    elif opcion_tiempo == 'Ultimos 3 años':
+        df_filtered = df_estados[(df_estados['Año'].isin(tiempos_dict[opcion_tiempo]))&(df_estados['Cultivo'] == opcion_cultivo)]
+    else:
+        df_filtered = df_estados[(df_estados['Cultivo'] == opcion_cultivo)]
+    
+    # Calcula la producción por entidad usando el DataFrame filtrado
+    produccion_por_entidad = df_filtered.groupby('Entidad')['Produccion'].sum()
+
+    # Encuentra la entidad con la producción máxima
+    entidad_max_produccion = produccion_por_entidad.idxmax()
+
+    repo_url = 'https://raw.githubusercontent.com/angelnmara/geojson/master/mexicoHigh.json'
+    mx_regions_geo = requests.get(repo_url).json()
+
+    # Create a DataFrame with all states of Mexico
+    all_states_df = pd.DataFrame({'Entidad': df_estados['Entidad'].unique()})
+
+    # Define the function to plot the map
+    def plot_map():
+        # Merge with all_states_df to ensure all states are present
+        merged_df = all_states_df.merge(df_filtered, on='Entidad', how='left')
+        merged_df = merged_df.fillna(0)
+
+        # st.table(merged_df)
+
+        
+        if entidad_max_produccion == 'Sonora':
+            custom_color_scale = ["#F2EBFE", px.colors.sequential.Purples[-1]]  # Light purple to dark purple
+        else:
+            custom_color_scale = ["#D6EAF8", px.colors.sequential.Blues[-1]]  # Light blue to dark blue
+
+        # Plot the choropleth map
+        fig = px.choropleth(data_frame=merged_df,
+                            geojson=mx_regions_geo,
+                            locations='Entidad',
+                            featureidkey='properties.name',
+                            color='Produccion (%)',
+                            color_continuous_scale=custom_color_scale
+                            )
+
+        # Update map layout
+        fig.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
+
+        # Code for title and annotations
+        fig.update_layout(
+            geo=dict(
+                showframe=False  # Hide the map frame borders
+            )
+        )
+
+        return fig
+
+    fig = plot_map()
+
+    # Mostrar el mapa en Streamlit
+    st.plotly_chart(fig)
+
+
+
 
 
 st.divider()
@@ -319,3 +383,51 @@ with col1_3:
 
 with col2_3:
     st.markdown(f"")
+
+
+# df_estados = pd.read_parquet('./data/Estados.parquet')
+
+# repo_url = 'https://raw.githubusercontent.com/angelnmara/geojson/master/mexicoHigh.json'
+# mx_regions_geo = requests.get(repo_url).json()
+
+# # Create a DataFrame with all states of Mexico
+# all_states_df = pd.DataFrame({'Entidad': df_estados['Entidad'].unique()})
+
+# # Define the function to plot the map
+# def plot_map(year, crop):
+#     # Filter the DataFrame according to the selected year and crop
+#     df_filtered = df_estados[(df_estados['Año'] == year) & (df_estados['Cultivo'] == crop)]
+
+#     # Merge with all_states_df to ensure all states are present
+#     merged_df = all_states_df.merge(df_filtered, on='Entidad', how='left')
+#     merged_df = merged_df.fillna(0)
+
+#     # Define the custom color scale
+#     custom_color_scale = ["#F2EBFE", px.colors.sequential.Purples[-1]]  # Light purple to dark purple
+#     #custom_color_scale = [px.colors.sequential.Purples[3], px.colors.sequential.Purples[-1]]  # Light purple to dark purple
+
+#     # Plot the choropleth map
+#     fig = px.choropleth(data_frame=merged_df,
+#                         geojson=mx_regions_geo,
+#                         locations='Entidad',
+#                         featureidkey='properties.name',
+#                         color='Produccion (%)',
+#                         color_continuous_scale=custom_color_scale
+#                         )
+
+#     # Update map layout
+#     fig.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
+
+#     # Code for title and annotations
+#     fig.update_layout(
+#         geo=dict(
+#             showframe=False  # Hide the map frame borders
+#         )
+#     )
+
+#     return fig
+
+# fig = plot_map(2023, opcion_cultivo)
+
+# # Mostrar el mapa en Streamlit
+# st.plotly_chart(fig)
