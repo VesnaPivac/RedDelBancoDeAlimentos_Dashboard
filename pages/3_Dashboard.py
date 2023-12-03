@@ -102,10 +102,7 @@ with col1:
     fig.update_traces(textposition='outside', textfont=dict(color='black'), showlegend=False) 
     fig.update_layout(height=450, width=650)
     fig.update_xaxes(title=None)
-        
-    # Mostrar el gráfico en Streamlit
     st.plotly_chart(fig)
-
 
 
 with col2:
@@ -154,10 +151,10 @@ with col2:
                             color_continuous_scale=custom_color_scale
                             )
 
-        # Update map layout
+        
         fig.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
 
-        # Code for title and annotations
+        
         fig.update_layout(
             geo=dict(
                 showframe=False  # Hide the map frame borders
@@ -168,8 +165,8 @@ with col2:
 
     fig = plot_map()
 
-    # Mostrar el mapa en Streamlit
     st.plotly_chart(fig)
+
 
 
 
@@ -184,6 +181,27 @@ col1_1, col2_1 = st.columns(2)
 with col1_1:
     st.markdown(f"## Top 3: Producción de {opcion_cultivo} por Entidad")
     st.text(f"Porcentaje con respecto a la producción total")
+
+     
+    df_estados_top3 = pd.read_parquet('./data/Estados.parquet')
+    if opcion_tiempo == 'Año Actual':
+        df_estados_top3 = df_estados_top3[(df_estados_top3['Año'] == curr_year)&(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    elif opcion_tiempo == 'Ultimos 3 años':
+        df_estados_top3 = df_estados_top3[(df_estados_top3['Año'].isin(tiempos_dict[opcion_tiempo]))&(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    else:
+        df_estados_top3 = df_estados_top3[(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    
+    
+    # Calcular la producción total para el cultivo seleccionado en todos los estados
+    produccion_total = df_estados_top3['Produccion'].sum()
+
+    # Calcular la producción total por entidad y ordenar de mayor a menor
+    df_estados_top3 = df_estados_top3.groupby('Entidad')['Produccion'].sum().sort_values(ascending=False)
+
+    # Seleccionar solo los primeros 3 elementos con mayor producción
+    top_3_entidades = df_estados_top3.head(3)
+
+
     data_plot = {
         'Entidad': top_3_entidades.index,
         'Producción Acumulada': top_3_entidades.values,
@@ -379,21 +397,16 @@ with col2_2:
 
 st.divider()
 
+col1_4, col2_4 = st.columns(2)
+
+with col1_4:
+    st.markdown(f'## Superficie Siniestrada en Sonora')
+    # cultivo_seleccionado = Cultivo y fecha
+    # cultivo_seleccionado['Precio Total Siniestrado'] = cultivo_seleccionado['Produccion siniestrada'] * cultivo_seleccionado['Rendimiento'] * cultivo_seleccionado['precio_frecuente']
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+# with col2_4:
 
 
 
