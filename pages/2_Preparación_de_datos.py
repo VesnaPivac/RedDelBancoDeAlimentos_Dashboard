@@ -9,6 +9,8 @@ El proceso de preparación de datos se ejecutó de manera individualizada para c
 
 ## SIAP
 
+Los pasos que conformaron el proceso de preparación de los datos del SIAP fueron:
+
 - 1. Aplicación de filtros
 - 2. Ajuste de los tipos de datos
 - 3. Análisis de valores faltantes
@@ -17,8 +19,13 @@ El proceso de preparación de datos se ejecutó de manera individualizada para c
 
 #### 1. Aplicación de filtros
 
-Con base en la retroalimentación ofrecida por medio de nuestro intermediario con la Red BAMX, primero se filtran los datos con base en la variable "Año", para trabajar solo con aquellos de los años 2020 en adelante.
-Derivado de la misma retroalimentación, se filtra también con base en la variable "Cultivo" para trabajar solo con aquellos de interés para la Red BAMX. Específicamente, la lista de cultivos es la siguiente: Tomate rojo (jitomate), Chile verde, Limón, Pepino, Plátano, Mango, Garbanzo, Brócoli, Cebolla, Sandía, Papaya, Calabacita, Lechuga, Tomate verde, Espárrago, Frambuesa, Nopalitos, Nuez, Fresa, Toronja (pomelo), Zarzamora, Piña, Coliflor, Frijol, Berenjena, Uva, Guayaba, Naranja, Papa, Melón, Manzana, Pera, Durazno.
+Con base en la retroalimentación proporcionada por nuestro canal de comunicación con la Red BAMX, se implementó un proceso de filtrado con el objetivo de refinar y focalizar nuestro conjunto de datos.
+
+- **Filtrado por año**
+Los datos son inicialmente filtrados según la variable "Año", limitándonos exclusivamente a aquellos correspondientes a los años 2020 en adelante. Este criterio temporal asegura que nuestra análisis se centre en la información más reciente y relevante.
+
+- **Filtrado por cultivo**
+En consonancia con las recomendaciones proporcionadas, también aplicamos un filtro basado en la variable "Cultivo". Nos enfocamos únicamente en los cultivos de interés para la Red BAMX. Esta selección específica incluye los siguientes cultivos: Tomate rojo (jitomate), Chile verde, Limón, Pepino, Plátano, Mango, Garbanzo, Brócoli, Cebolla, Sandía, Papaya, Calabacita, Lechuga, Tomate verde, Espárrago, Frambuesa, Nopalitos, Nuez, Fresa, Toronja (pomelo), Zarzamora, Piña, Coliflor, Frijol, Berenjena, Uva, Guayaba, Naranja, Papa, Melón, Manzana, Pera, Durazno.
 '''
 
 st.markdown(body)
