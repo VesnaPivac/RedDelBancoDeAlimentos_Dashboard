@@ -21,3 +21,4 @@ Con base en la retroalimentación ofrecida por medio de nuestro intermediario co
 Derivado de la misma retroalimentación, se filtra también con base en la variable "Cultivo" para trabajar solo con aquellos de interés para la Red BAMX. Específicamente, la lista de cultivos es la siguiente: Tomate rojo (jitomate), Chile verde, Limón, Pepino, Plátano, Mango, Garbanzo, Brócoli, Cebolla, Sandía, Papaya, Calabacita, Lechuga, Tomate verde, Espárrago, Frambuesa, Nopalitos, Nuez, Fresa, Toronja (pomelo), Zarzamora, Piña, Coliflor, Frijol, Berenjena, Uva, Guayaba, Naranja, Papa, Melón, Manzana, Pera, Durazno.
 '''
 
+st.markdown(body)
