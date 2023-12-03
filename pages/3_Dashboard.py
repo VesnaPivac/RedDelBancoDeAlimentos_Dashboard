@@ -10,8 +10,8 @@ import requests
 
 
 
-st.title('Red del Banco de Alimentos')
-st.markdown('## Producción en Sonora y su actividad economica')
+st.title('Agricultura Sonorense: Datos Esenciales de Nuestra Producción')
+# st.markdown('## Agricultura Sonorense: Datos Esenciales de Nuestra Producción')
 st.divider()
 
 
@@ -48,6 +48,9 @@ estados = np.sort(cultivos_con_produccion)
 opcion_cultivo = st.selectbox('Cultivo:', estados, index=0,  placeholder="Choose an option")
 
 
+
+#-----------------------------------------SECCION 1 -------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Primeras dos columnas
 col1, col2 = st.columns(2)
@@ -171,10 +174,11 @@ with col2:
 
 
 
+#-----------------------------------------SECCION 2 -------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-st.divider()
+# st.divider()
 
-# col1_1, col2_1, col3_1 = st.columns([1,3,1])
 col1_1, col2_1 = st.columns(2)
 
 with col1_1:
@@ -272,6 +276,8 @@ with col2_1:
 
 
 
+#-----------------------------------------SECCION 3 -------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 st.divider()
@@ -366,8 +372,38 @@ with col2_2:
     tab3.plotly_chart(fig)
 
 
+
+
+#-----------------------------------------SECCION 4 -------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 st.divider()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------------SECCION 5 -------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+st.divider()
 
 col1_3, col2_3 = st.columns(2)
 
@@ -401,50 +437,3 @@ with col1_3:
 with col2_3:
     st.markdown(f"")
 
-
-# df_estados = pd.read_parquet('./data/Estados.parquet')
-
-# repo_url = 'https://raw.githubusercontent.com/angelnmara/geojson/master/mexicoHigh.json'
-# mx_regions_geo = requests.get(repo_url).json()
-
-# # Create a DataFrame with all states of Mexico
-# all_states_df = pd.DataFrame({'Entidad': df_estados['Entidad'].unique()})
-
-# # Define the function to plot the map
-# def plot_map(year, crop):
-#     # Filter the DataFrame according to the selected year and crop
-#     df_filtered = df_estados[(df_estados['Año'] == year) & (df_estados['Cultivo'] == crop)]
-
-#     # Merge with all_states_df to ensure all states are present
-#     merged_df = all_states_df.merge(df_filtered, on='Entidad', how='left')
-#     merged_df = merged_df.fillna(0)
-
-#     # Define the custom color scale
-#     custom_color_scale = ["#F2EBFE", px.colors.sequential.Purples[-1]]  # Light purple to dark purple
-#     #custom_color_scale = [px.colors.sequential.Purples[3], px.colors.sequential.Purples[-1]]  # Light purple to dark purple
-
-#     # Plot the choropleth map
-#     fig = px.choropleth(data_frame=merged_df,
-#                         geojson=mx_regions_geo,
-#                         locations='Entidad',
-#                         featureidkey='properties.name',
-#                         color='Produccion (%)',
-#                         color_continuous_scale=custom_color_scale
-#                         )
-
-#     # Update map layout
-#     fig.update_geos(showcountries=False, showcoastlines=False, showland=False, fitbounds="locations")
-
-#     # Code for title and annotations
-#     fig.update_layout(
-#         geo=dict(
-#             showframe=False  # Hide the map frame borders
-#         )
-#     )
-
-#     return fig
-
-# fig = plot_map(2023, opcion_cultivo)
-
-# # Mostrar el mapa en Streamlit
-# st.plotly_chart(fig)
