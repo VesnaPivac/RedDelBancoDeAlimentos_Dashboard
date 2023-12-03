@@ -43,6 +43,35 @@ De manera predeterminada, el sistema del SIAP presenta los datos numéricos (Sup
 
 Es importante destacar que, a pesar de esta transformación, hemos optado por retener los datos acumulativos originales como referencia. Esto nos permite verificar la corrección de los valores mensuales y brinda la posibilidad de utilizar los datos acumulativos en análisis futuros.
 
+#### 5. Análisis de valores atípicos
+
+Para la detección de valores atípicos se implementaron los dos métodos: *Local Outlier Factor* (LOF) y *Isolation Forest* (IF). Los resultados obtenidos por cada método se resumen a continuación:
+
+| **Método**                   | **Cantidad de valores atípicos detectados**      | **Porcentaje del total de datos**  |
+|------------------------------|--------------------------------------------------|------------------------------------|
+| Local Outlier Factor         | 29552                                            | 7.82%                              |
+| Isolation Forest             | 20338                                            | 5.38%                              |
+
+No obstante, la revisión de los datos clasificados como atípicos por estos métodos no reveló patrones verdaderamente anómalos. A pesar de reconocer nuestra limitada experiencia en el ámbito agrícola, los datos identificados como supuestamente atípicos parecían simplemente reflejar períodos fluctuantes de rendimiento para diversos cultivos. Con base en esta observación, se tomó la decisión de mantener el conjunto de datos sin eliminar los datos señalados como atípicos. Este enfoque se fundamenta en la comprensión de que estos valores podrían representar variaciones normales en la producción agrícola, sin necesariamente indicar anomalías significativas.
+
 '''
+
+st.markdown(body)
+
+st.divider()
+
+body = '''
+
+## SNIIM
+
+Los pasos que conformaron el proceso de preparación de los datos del SIAP fueron:
+
+- 1. Aplicación de filtros
+- 2. Ajuste de los tipos de datos
+- 3. Análisis de valores faltantes
+- 4. Obtención de valores mensuales
+- 5. Análisis de valores atípicos
+'''
+
 
 st.markdown(body)
