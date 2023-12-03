@@ -7,6 +7,14 @@ st.title('Preparación de datos')
 body = '''
 El proceso de preparación de datos se ejecutó de manera individualizada para cada uno de los dos conjuntos de datos con los que trabajamos: SIAP y SNIIM. Aunque los procedimientos son en su mayoría idénticos, cada conjunto de datos demandó tratamientos específicos. Comenzaremos detallando la serie de pasos que delinearon el proceso de preparación de datos para el conjunto SIAP y procederemos a hacer lo mimso para el conjunto SNIIM.
 
+'''
+
+st.markdown(body)
+
+st.divider()
+
+body = '''
+
 ## SIAP
 
 Los pasos que conformaron el proceso de preparación de los datos del SIAP fueron:
