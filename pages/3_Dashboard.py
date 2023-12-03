@@ -306,7 +306,7 @@ with col1_2:
     
     st.markdown(f"## Producción Promedio de {opcion_cultivo} en Pesos")
 
-    cultivo_seleccionado['Precio total'] = cultivo_seleccionado['Produccion']*cultivo_seleccionado['Precio Frecuente']
+    cultivo_seleccionado['Precio total'] = cultivo_seleccionado['Produccion']*(cultivo_seleccionado['Precio Frecuente']*1000)
 
     resultado = cultivo_seleccionado.groupby('Entidad').agg({'Produccion': 'sum', 'Precio total': 'sum','Rendimiento': 'sum'})
     resultado = resultado.sort_values('Precio total', ascending=False).reset_index()
@@ -347,7 +347,7 @@ with col2_2:
     meses = {'Enero': 1, 'Febrero': 2, 'Marzo': 3, 'Abril': 4, 'Mayo': 5, 'Junio': 6,'Julio': 7, 'Agosto': 8, 'Septiembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12}
     
     df_merge_valor_produccion = df_merge.loc[(df_merge['Entidad']=='Sonora')&(df_merge['Cultivo']==opcion_cultivo)]
-    df_merge_valor_produccion['Precio total'] = df_merge_valor_produccion['Produccion'] * df_merge_valor_produccion['Precio Frecuente']
+    df_merge_valor_produccion['Precio total'] = df_merge_valor_produccion['Produccion'] * (df_merge_valor_produccion['Precio Frecuente']  * 1000)
     df_merge_valor_produccion['Mes'] = df_merge_valor_produccion['Mes'].map(meses)
     df_merge_valor_produccion['Fecha'] = pd.to_datetime(df_merge_valor_produccion['Año'].astype(str) + '-' + df_merge_valor_produccion['Mes'].astype(str))
 
