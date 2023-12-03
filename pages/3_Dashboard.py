@@ -80,7 +80,7 @@ with col1:
     
     prd_son = produccion_por_entidad['Sonora']
     pct_mexico_son = (prd_son * 100)/produccion_total
-    pct_mexico_son_text = str(round(pct_mexico_son,2))+"%"
+    pct_mexico_son_text = str(round(pct_mexico_son,4))+"%"
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
     st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: #272F7C">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color: #9867CB">{str("{:,}".format(round(prd_son,2)))}</span> toneladas del total.',unsafe_allow_html=True)
@@ -200,12 +200,12 @@ with col1_1:
 
     # Seleccionar solo los primeros 3 elementos con mayor producción
     top_3_entidades = df_estados_top3.head(3)
-
+    
 
     data_plot = {
         'Entidad': top_3_entidades.index,
         'Producción Acumulada': top_3_entidades.values,
-        'Porcentaje con respecto a la producción total': porcentaje_total.values.round(2)
+        'Porcentaje con respecto a la producción total': porcentaje_total.values.round(4)
     }
     df_plot = pd.DataFrame(data_plot)
     df_plot['Porcentaje con respecto a la producción total'] = df_plot['Porcentaje con respecto a la producción total'].astype(str) + '%'
@@ -315,7 +315,7 @@ with col1_2:
     precio_total_son = resultado.loc[resultado['Entidad']=='Sonora','Precio total'].sum()
     resultado = resultado[resultado['Precio total'] != 0]
     resultado = resultado.head(10)
-    resultado = resultado.rename(columns={'Entidad': 'Estado', 'Produccion': 'Producción', 'Precio total': 'Precio Total (MDP)'})
+    resultado = resultado.rename(columns={'Entidad': 'Estado', 'Produccion': 'Producción (Hectárea)', 'Precio total': 'Precio Total (MDP)','Rendimiento':'Rendimiento (MDP)'})
 
 
 
@@ -328,7 +328,7 @@ with col1_2:
 
     # Aplicar estilo de resaltado
     styled_table = resultado.style.apply(resaltar_sonora, axis=1)
-    styled_table = styled_table.format({'Producción': '{:.2f}', 'Precio Total (MDP)': '{:.4f}','Rendimiento':'{:.2f}'})
+    styled_table = styled_table.format({'Producción (Hectárea)': '{:.2f}', 'Precio Total (MDP)': '{:.4f}','Rendimiento (MDP)':'{:.2f}'})
         
     # Mostrar el DataFrame en Streamlit
     st.write(styled_table)
@@ -476,12 +476,35 @@ with col2_3:
         
     # Graficar con Plotly Express
     fig = px.line(sembrada_vs_cosechada, x='Año', y=['Superficie Siniestrada', 'Superficie Sembrada','Superficie Cosechada'], 
-                labels={'Fecha': 'Fecha', 'value': 'Superficie (unidades)'})
+                labels={'Fecha': 'Fecha', 'value': 'Superficie (Hectarias)'})
 
     # Configuraciones adicionales si es necesario
-    fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (unidades)', legend_title='Tipo de Superficie')
+    fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (Hectarias)', legend_title='Tipo de Superficie')
     fig.update_traces(mode='lines')
 
     # Mostrar la figura en Streamlit
     st.plotly_chart(fig)
+
+
+col1_5, col2_5, col3_5 = st.columns([2,5,2])
+
+with col2_5:
+    st.markdown(f"## Superficie Potencial por Cosechar")
+    potencial_cosechar = df_merge.copy()
+    potencial_cosechar = potencial_cosechar.loc[(potencial_cosechar['Entidad'] == 'Sonora')&(potencial_cosechar['Año']==datetime.now().year)&(potencial_cosechar['Cultivo']==opcion_cultivo)]
+    num_meses = len(potencial_cosechar['Mes'].unique())
+    rendimiento_promedio = potencial_cosechar['Rendimiento'].sum()/num_meses
+    potencial_cosechar_kpi = (potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum()+potencial_cosechar['Superficie Siniestrada'].sum()))*rendimiento_promedio
+    # Crear una visualización tipo tarjeta con Matplotlib en Streamlit
+    fig, ax = plt.subplots(figsize=(1, 0.5))
+    ax.text(0.5, 0.5, '$'+str("{:,}".format(round(potencial_cosechar_kpi,2))), ha='center', va='center', fontsize=30)
+    # ax.set_title("Producción Total")
+    ax.axis('off')  # Desactivar ejes
+    plt.tight_layout()
+
+    # Mostrar la visualización en Streamlit
+    st.pyplot(fig)
+
+
+
 
