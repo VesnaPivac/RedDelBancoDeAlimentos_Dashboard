@@ -456,7 +456,7 @@ with col1_3:
                     path=["Entidad","Municipio"],
                     values="Produccion (%)",
                     color_discrete_map={'Entidad': "white"},  # Asignar blanco al      
-                    width=650, height=600
+                    width=500, height=600
                     )
 
     fig.update_traces(root_color="whitesmoke")
