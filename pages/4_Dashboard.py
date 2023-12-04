@@ -414,7 +414,7 @@ with col1_2:
     # Aplicar estilo de resaltado
     
     styled_table = resultado.style.apply(resaltar_sonora, axis=1)
-    styled_table = styled_table.format({'Producción (Toneladas)': '{:.2f}', 'Precio Total (MDP)': '{:.4f}','Rendimiento':'{:.2f}','Rendimiento Economico (MDP)':'{:.2f}'})
+    styled_table = styled_table.format({'Producción (Toneladas)': '{:,.2f}', 'Precio Total (MDP)': '{:,.4f}','Rendimiento':'{:,.2f}','Rendimiento Economico (MDP)':'{:,.2f}'})
     
     # Mostrar el DataFrame en Streamlit
     st.write(styled_table.set_caption('Estado'),unsafe_allow_html=True, width=400)
@@ -439,6 +439,7 @@ with col2_2:
     df_merge_valor_produccion['Precio total'] = df_merge_valor_produccion['Produccion'] * (df_merge_valor_produccion['Precio Frecuente']  * 1000)
     df_merge_valor_produccion['Mes'] = df_merge_valor_produccion['Mes'].map(meses)
     df_merge_valor_produccion['Fecha'] = pd.to_datetime(df_merge_valor_produccion['Año'].astype(str) + '-' + df_merge_valor_produccion['Mes'].astype(str))
+    # df_merge_valor_produccion['Rendimiento Economico (MDP)'] = round(((df_merge_valor_produccion['Precio total'] * df_merge_valor_produccion['Produccion'])/1000000),2)
 
     # Ordenar por fecha para asegurarse de que los datos estén en orden temporal
     df_merge_valor_produccion = df_merge_valor_produccion.sort_values('Fecha')
@@ -457,7 +458,6 @@ with col2_2:
 
     tab2.subheader("Precio Total en Millones de Pesos (MDP) a lo largo del tiempo")
     df_merge_valor_produccion['Precio total'] = round((df_merge_valor_produccion['Precio total']/1000000),2)
-
     fig = px.line(df_merge_valor_produccion, x='Fecha', y='Precio total', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
     fig.update_layout(
         xaxis_title='Fecha',
@@ -472,11 +472,22 @@ with col2_2:
     fig = px.line(df_merge_valor_produccion, x='Fecha', y='Rendimiento', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
     fig.update_layout(
         xaxis_title='Fecha',
-        yaxis_title='Rendimiento (MDP)',
+        yaxis_title='Rendimiento (Hectarea*Pesos)',
         xaxis=dict(tickangle=45),
         showlegend=False
     )
     tab3.plotly_chart(fig)
+
+    # tab4.subheader("Rendimiento total en millones de pesos a lo largo del tiempo")
+    # fig = px.line(df_merge_valor_produccion, x='Fecha', y='Rendimiento Economico (MDP)', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
+    # fig.update_layout(
+    #     xaxis_title='Fecha',
+    #     yaxis_title='Rendimiento (MDP)',
+    #     xaxis=dict(tickangle=45),
+    #     showlegend=False
+    # )
+    # tab3.plotly_chart(fig)
+
 
 
 
@@ -520,8 +531,62 @@ with col2_4:
 
 #-----------------------------------------SECCION 5 -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
+st.divider()
+col1_5, col2_5, col3_5, col4_5,col5_5= st.columns([1,2,1,2,1])
+
+with col2_5:
+    st.markdown(f"## Producción restante potencial:")
+    potencial_cosechar = df_merge.copy()
+    potencial_cosechar = potencial_cosechar.loc[(potencial_cosechar['Entidad'] == 'Sonora')&(potencial_cosechar['Año']==datetime.now().year)&(potencial_cosechar['Cultivo']==opcion_cultivo)]
+    num_meses = len(potencial_cosechar['Mes'].unique())
+    rendimiento_promedio = potencial_cosechar['Rendimiento'].sum()/num_meses
+    potencial_cosechar_kpi = (potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum()+potencial_cosechar['Superficie Siniestrada'].sum()))*rendimiento_promedio
+    
+    fig, ax = plt.subplots(figsize=(5, 0.1), dpi=500)
+    ax.text(0.3, 0.3, str("{:,}".format(round(potencial_cosechar_kpi,2))), ha='center', va='center', fontsize=30, color='#9867CB')
+    # ax.set_title("Producción Total")
+    ax.axis('off')  # Desactivar ejes
+    plt.tight_layout()
+
+    st.pyplot(fig)
+
+st.text("")
+st.text("")
+st.text("")
 
 st.divider()
+with col4_5:
+    st.markdown(f"## Valor económico de la superficie por cosechar:")
+    potencial_cosechar2 = df_merge.copy()
+    potencial_cosechar2 = potencial_cosechar2.loc[(potencial_cosechar2['Entidad'] == 'Sonora')&(potencial_cosechar2['Año']==datetime.now().year)&(potencial_cosechar2['Cultivo']==opcion_cultivo)]
+    num_meses2 = len(potencial_cosechar2['Mes'].unique())
+    rendimiento_promedio2 = potencial_cosechar2['Rendimiento'].sum()/num_meses2
+
+    potencial_cosechar_kpi2 = ((potencial_cosechar2['Superficie Sembrada'].sum() - (potencial_cosechar2['Superficie Cosechada'].sum() + potencial_cosechar2['Superficie Siniestrada'].sum())) * rendimiento_promedio) * potencial_cosechar2['Precio Frecuente'].sum()
+    
+    # Convertir a formato de texto con comas separadoras para los miles
+    potencial_cosechar_kpi2_text = "{:,.2f}".format(round(float(potencial_cosechar_kpi2), 2))
+
+    fig, ax = plt.subplots(figsize=(5, 0.1), dpi=500)
+    ax.text(0.3, 0.3, '$'+str("{:,}".format(round(potencial_cosechar_kpi2,2))), ha='center', va='center', fontsize=30, color='#9867CB')
+    # ax.set_title("Producción Total")
+    ax.axis('off')  # Desactivar ejes
+    plt.tight_layout()
+
+    st.pyplot(fig)
+
+
+
+
+
+
+#-----------------------------------------SECCION 6 -------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+# st.divider()
 
 col1_3, col2_3 = st.columns(2)
 
@@ -586,25 +651,6 @@ with col2_3:
 
     st.plotly_chart(fig)
 
-
-
-col1_5, col2_5, col3_5 = st.columns([3,5,2])
-
-with col2_5:
-    st.markdown(f"## Superficie Potencial por Cosechar")
-    potencial_cosechar = df_merge.copy()
-    potencial_cosechar = potencial_cosechar.loc[(potencial_cosechar['Entidad'] == 'Sonora')&(potencial_cosechar['Año']==datetime.now().year)&(potencial_cosechar['Cultivo']==opcion_cultivo)]
-    num_meses = len(potencial_cosechar['Mes'].unique())
-    rendimiento_promedio = potencial_cosechar['Rendimiento'].sum()/num_meses
-    potencial_cosechar_kpi = (potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum()+potencial_cosechar['Superficie Siniestrada'].sum()))*rendimiento_promedio
-    
-    fig, ax = plt.subplots(figsize=(5, 0.1), dpi=500)
-    ax.text(0.3, 0.3, ' $'+str("{:,}".format(round(potencial_cosechar_kpi,2))), ha='center', va='center', fontsize=20)
-    # ax.set_title("Producción Total")
-    ax.axis('off')  # Desactivar ejes
-    plt.tight_layout()
-
-    st.pyplot(fig)
 
 
 
