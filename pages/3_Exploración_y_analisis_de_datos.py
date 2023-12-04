@@ -40,8 +40,61 @@ url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashb
 
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
-st.image(img, caption='Educative')
+st.image(img)
 
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot2.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
+
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot3.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
+
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot4.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
+
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot5.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
+
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot6.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
+
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot7.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
+
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot8.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
+
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot9.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
+
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot10.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img)
 
 
 # '''
