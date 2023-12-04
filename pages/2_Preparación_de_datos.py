@@ -19,11 +19,11 @@ body = '''
 
 Los pasos que conformaron el proceso de preparación de los datos del SIAP fueron:
 
-- 1. Aplicación de filtros
-- 2. Ajuste de los tipos de datos
-- 3. Análisis de valores faltantes
-- 4. Obtención de valores mensuales
-- 5. Análisis de valores atípicos
+1. Aplicación de filtros
+2. Ajuste de los tipos de datos
+3. Análisis de valores faltantes
+4. Obtención de valores mensuales
+5. Análisis de valores atípicos
 
 #### 1. Aplicación de filtros
 
