@@ -51,36 +51,39 @@ opcion_cultivo = st.selectbox('Cultivo:', estados, index=0,  placeholder="Choose
 
 #-----------------------------------------SECCION 1 -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
-
+if(opcion_tiempo == 'Historico'):
+    cultivo_seleccionado = df_merge[df_merge['Cultivo'] == opcion_cultivo]
+elif(opcion_tiempo == 'Ultimos 3 años'):
+    cultivo_seleccionado = df_merge[(df_merge['Cultivo'] == opcion_cultivo)&(df_merge['Año'].isin(tiempos_dict[opcion_tiempo]))]
+elif(opcion_tiempo == 'Año Actual'):
+    cultivo_seleccionado = df_merge[(df_merge['Cultivo'] == opcion_cultivo)&(df_merge['Año']==curr_year)]
+    
+    
 # Primeras dos columnas
 col1, col2 = st.columns(2)
 
 with col1:
-
-    if(opcion_tiempo == 'Historico'):
-        cultivo_seleccionado = df_merge[df_merge['Cultivo'] == opcion_cultivo]
-    elif(opcion_tiempo == 'Ultimos 3 años'):
-        cultivo_seleccionado = df_merge[(df_merge['Cultivo'] == opcion_cultivo)&(df_merge['Año'].isin(tiempos_dict[opcion_tiempo]))]
-    elif(opcion_tiempo == 'Año Actual'):
-        cultivo_seleccionado = df_merge[(df_merge['Cultivo'] == opcion_cultivo)&(df_merge['Año']==curr_year)]
-        
-
+    df_estados = pd.read_parquet('./data/Estados.parquet')
+    
     # Calcular la producción total para el cultivo seleccionado en todos los estados
-    produccion_total = cultivo_seleccionado['Produccion'].sum()
+    produccion_total = df_estados['Produccion'].sum()
 
     # Calcular la producción total por entidad y ordenar de mayor a menor
-    produccion_por_entidad = cultivo_seleccionado.groupby('Entidad')['Produccion'].sum().sort_values(ascending=False)
+    produccion_por_entidad = df_estados.groupby('Entidad')['Produccion'].sum().sort_values(ascending=False)
 
     # Seleccionar solo los primeros 3 elementos con mayor producción
-    top_3_entidades = produccion_por_entidad.head(3)
+    # top_3_entidades = produccion_por_entidad.head(3) 
 
-
-    # Calcular el porcentaje de la producción de cada entidad con respecto a la producción total
-    porcentaje_total = (top_3_entidades / produccion_total) * 100
     
     prd_son = produccion_por_entidad['Sonora']
     pct_mexico_son = (prd_son * 100)/produccion_total
     pct_mexico_son_text = str(round(pct_mexico_son,4))+"%"
+
+    data_son = pd.DataFrame({
+                    'Entidad': ['Sonora'],
+                    'Produccion': [prd_son],
+                    'Produccion (%)': [pct_mexico_son]
+                     })
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
     st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: #272F7C">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color: #9867CB">{str("{:,}".format(round(prd_son,2)))}</span> toneladas del total.',unsafe_allow_html=True)
@@ -179,64 +182,140 @@ with col2:
 col1_1, col2_1 = st.columns(2)
 
 with col1_1:
-    st.markdown(f"## Top 3: Producción de {opcion_cultivo} por Entidad")
+    st.markdown(f"## Principales Entidades Contribuyentes a la Producción de {opcion_cultivo}")
     st.text(f"Porcentaje con respecto a la producción total")
 
+    
      
-    df_estados_top3 = pd.read_parquet('./data/Estados.parquet')
-    if opcion_tiempo == 'Año Actual':
-        df_estados_top3 = df_estados_top3[(df_estados_top3['Año'] == curr_year)&(df_estados_top3['Cultivo'] == opcion_cultivo)]
-    elif opcion_tiempo == 'Ultimos 3 años':
-        df_estados_top3 = df_estados_top3[(df_estados_top3['Año'].isin(tiempos_dict[opcion_tiempo]))&(df_estados_top3['Cultivo'] == opcion_cultivo)]
-    else:
-        df_estados_top3 = df_estados_top3[(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    # df_estados_top3 = pd.read_parquet('./data/Estados.parquet')
+    # if opcion_tiempo == 'Año Actual':
+    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Año'] == curr_year)&(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    # elif opcion_tiempo == 'Ultimos 3 años':
+    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Año'].isin(tiempos_dict[opcion_tiempo]))&(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    # else:
+    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Cultivo'] == opcion_cultivo)]
     
     
-    # Calcular la producción total para el cultivo seleccionado en todos los estados
-    produccion_total = df_estados_top3['Produccion'].sum()
+    # # Calcular la producción total para el cultivo seleccionado en todos los estados
+    # produccion_total = df_estados_top3['Produccion'].sum()
 
-    # Calcular la producción total por entidad y ordenar de mayor a menor
-    df_estados_top3 = df_estados_top3.groupby('Entidad')['Produccion'].sum().sort_values(ascending=False)
+    # # Calcular la producción total por entidad y ordenar de mayor a menor
+    # df_estados_top3 = df_estados_top3.groupby('Entidad')['Produccion'].sum().sort_values(ascending=False)
 
-    # Seleccionar solo los primeros 3 elementos con mayor producción
-    top_3_entidades = df_estados_top3.head(3)
+    # # Seleccionar solo los primeros 3 elementos con mayor producción
+    # top_3_entidades = df_estados_top3.head(3)
     
 
-    data_plot = {
-        'Entidad': top_3_entidades.index,
-        'Producción Acumulada': top_3_entidades.values,
-        'Porcentaje con respecto a la producción total': porcentaje_total.values.round(4)
-    }
-    df_plot = pd.DataFrame(data_plot)
-    df_plot['Porcentaje con respecto a la producción total'] = df_plot['Porcentaje con respecto a la producción total'].astype(str) + '%'
+    # data_plot = {
+    #     'Entidad': top_3_entidades.index,
+    #     'Producción Acumulada': top_3_entidades.values,
+    #     'Porcentaje con respecto a la producción total': porcentaje_total.values.round(4)
+    # }
+    # df_plot = pd.DataFrame(data_plot)
+    # df_plot['Porcentaje con respecto a la producción total'] = df_plot['Porcentaje con respecto a la producción total'].astype(str) + '%'
 
-    # Ordenar de mayor a menor
-    df_plot = df_plot.sort_values('Producción Acumulada', ascending=True)
+    # # Ordenar de mayor a menor
+    # df_plot = df_plot.sort_values('Producción Acumulada', ascending=True)
 
-    # Crear gráfico de barras horizontales con Plotly Express
-    fig = px.bar(df_plot, x='Producción Acumulada', y='Entidad', text='Porcentaje con respecto a la producción total',
-                orientation='h',
-                labels={'Producción Acumulada': 'Producción Acumulada'})
-    fig.update_yaxes(title=None)
+    # # Crear gráfico de barras horizontales con Plotly Express
+    # fig = px.bar(df_plot, x='Producción Acumulada', y='Entidad', text='Porcentaje con respecto a la producción total',
+    #             orientation='h',
+    #             labels={'Producción Acumulada': 'Producción Acumulada'})
+    # fig.update_yaxes(title=None)
         
-    # Definir colores para todas las barras, excepto la más grande
-    if df_plot.Entidad[0] == 'Sonora':
-        colors = ['gray'] * (len(df_plot) - 1) + ['#9867CB']
-    else:
-        colors = ['gray'] * (len(df_plot) - 1) + ['#81B4E3']  # Todas en gris excepto la más grande en morado
+    # # Definir colores para todas las barras, excepto la más grande
+    # if df_plot.Entidad[0] == 'Sonora':
+    #     colors = ['gray'] * (len(df_plot) - 1) + ['#9867CB']
+    # else:
+    #     colors = ['gray'] * (len(df_plot) - 1) + ['#81B4E3']  # Todas en gris excepto la más grande en morado
 
-    # Configurar colores de las barras
-    fig.update_traces(marker=dict(color=colors))
-    fig.update_traces(textposition='outside', textfont=dict(color='black'))
-    fig.update_layout(height=300, width=400)
+    # # Configurar colores de las barras
+    # fig.update_traces(marker=dict(color=colors))
+    # fig.update_traces(textposition='outside', textfont=dict(color='black'))
+    # fig.update_layout(height=300, width=400)
 
-    # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig,use_container_width=True) 
-    mayor_productor = df_plot.Entidad[0] 
-    if(mayor_productor == 'Sonora'):
-        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #9867CB">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país',unsafe_allow_html=True)
-    else:
-        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país mientras que Sonora aporta el <span style="color: #9867CB">{pct_mexico_son_text}</span> del total de producción.',unsafe_allow_html=True)
+    # # Mostrar el gráfico en Streamlit
+    # st.plotly_chart(fig,use_container_width=True) 
+    # mayor_productor = df_plot.Entidad[0] 
+    # if(mayor_productor == 'Sonora'):
+    #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #9867CB">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país',unsafe_allow_html=True)
+    # else:
+    #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país mientras que Sonora aporta el <span style="color: #9867CB">{pct_mexico_son_text}</span> del total de producción.',unsafe_allow_html=True)
+
+#-------------------------------------------------------------------------------------------------------------------
+    # df_estados_top3 = pd.read_parquet('./data/Estados.parquet')
+    # if opcion_tiempo == 'Año Actual':
+    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Año'] == curr_year)&(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    # elif opcion_tiempo == 'Ultimos 3 años':
+    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Año'].isin(tiempos_dict[opcion_tiempo]))&(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    # else:
+    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    
+    
+    # df_estados_top3 = df_estados_top3.sort_values(by='Produccion', ascending=False)
+
+    # # Seleccionar los tres primeros elementos con mayor producción
+    # if (df_estados_top3.loc[df_estados_top3['Produccion'] == df_estados_top3['Produccion'].max(), 'Entidad'].iloc[0] != 'Sonora'):
+    #     data_son = df_estados_top3.loc[df_estados_top3['Entidad'] == 'Sonora']
+    #     top_3_entidades = df_estados_top3.head(3)
+    #     top_3_entidades = pd.concat((top_3_entidades,data_son))
+  
+
+
+    # data_plot = {
+    #     'Entidad': top_3_entidades['Entidad'],
+    #     'Producción Acumulada': top_3_entidades['Produccion'],
+    #     'Porcentaje con respecto a la producción total': top_3_entidades['Produccion (%)'].round(4)
+    # }
+    # df_plot = pd.DataFrame(data_plot)
+    # df_plot['Porcentaje con respecto a la producción total'] = df_plot['Porcentaje con respecto a la producción total'].astype(str) + '%'
+
+    # # Ordenar de mayor a menor
+    # df_plot = df_plot.sort_values('Producción Acumulada', ascending=True)
+
+    # # Crear gráfico de barras horizontales con Plotly Express
+    # fig = px.bar(df_plot, x='Producción Acumulada', y='Entidad', text='Porcentaje con respecto a la producción total',
+    #             orientation='h',
+    #             labels={'Producción Acumulada': 'Producción Acumulada'})
+    # fig.update_yaxes(title=None)
+        
+    # mayor_productor = df_plot.loc[df_plot['Producción Acumulada'] == df_plot['Producción Acumulada'].max()]['Entidad'].iloc[0]
+    
+    # filtro_sonora = df_plot['Entidad'] == 'Sonora'
+
+    # if filtro_sonora.any():
+    #     porcentaje_sonora = str(df_plot.loc[filtro_sonora, 'Porcentaje con respecto a la producción total'].iloc[0])
+
+    #     if mayor_productor == 'Sonora':
+    #         colors = ['gray'] * (len(df_plot) - 1) + ['#9867CB']
+    #     else:
+    #         colors = ['#9867CB'] + ['gray'] * (len(df_plot) - 2) + ['#81B4E3']  # Todas en gris excepto la más grande en morado
+    #         porcentaje_top1 = str(df_plot.loc[df_plot['Entidad']==mayor_productor,'Porcentaje con respecto a la producción total'].iloc[0])
+    # else:
+    #     colors = ['gray'] * (len(df_plot) - 1) + ['#81B4E3']
+    #     porcentaje_top1 = str(df_plot.loc[df_plot['Entidad']==mayor_productor,'Porcentaje con respecto a la producción total'].iloc[0])
+
+
+    # # Configurar colores de las barras
+    # fig.update_traces(marker=dict(color=colors))
+    # fig.update_traces(textposition='outside', textfont=dict(color='black'))
+    # fig.update_layout(height=300, width=400)
+
+    # # Mostrar el gráfico en Streamlit
+    # st.plotly_chart(fig,use_container_width=True) 
+
+    # porcentaje_sonora = pct_mexico_son_text
+    # # if filtro_sonora.any():
+    # if mayor_productor == 'Sonora':
+    #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #9867CB">{porcentaje_sonora}</span> de la producción total del país',unsafe_allow_html=True)
+    # else:
+    #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{porcentaje_top1}</span> de la producción total del país mientras que Sonora aporta el <span style="color: #9867CB">{porcentaje_sonora}</span> del total de producción.',unsafe_allow_html=True)
+    # # else:
+    # #     porcentaje_sonora = produccion_total/(100*prd_son)
+    # #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{porcentaje_top1}</span> de la producción total del país.',unsafe_allow_html=True)
+
+
+
 
 with col2_1:
         
@@ -311,27 +390,34 @@ with col1_2:
     resultado = cultivo_seleccionado.groupby('Entidad').agg({'Produccion': 'sum', 'Precio total': 'sum','Rendimiento': 'sum'})
     resultado = resultado.sort_values('Precio total', ascending=False).reset_index()
     resultado['Precio total'] = resultado['Precio total'] / 1000000
+    resultado['Rendimiento Economico (MDP)'] = (resultado['Precio total'] * resultado['Produccion'])/1000000
     precio_total_pais = resultado['Precio total'].sum()
     precio_total_son = resultado.loc[resultado['Entidad']=='Sonora','Precio total'].sum()
     resultado = resultado[resultado['Precio total'] != 0]
     resultado = resultado.head(10)
-    resultado = resultado.rename(columns={'Entidad': 'Estado', 'Produccion': 'Producción (Hectárea)', 'Precio total': 'Precio Total (MDP)','Rendimiento':'Rendimiento (MDP)'})
+    resultado = resultado.rename(columns={'Entidad': 'Estado', 'Produccion': 'Producción (Toneladas)', 'Precio total': 'Precio Total (MDP)'})
 
-
+    resultado.set_index('Estado', inplace=True)
 
     # Función para resaltar la fila de 'Sonora'
     def resaltar_sonora(row):
-        if row['Estado'] == 'Sonora':
+        # if row['Estado'] == 'Sonora':
+        #     return ['background-color: #E8D7FA'] * len(row)
+        # else:
+        #     return [''] * len(row)
+
+        if row.name == 'Sonora':  # Utiliza row.name para referenciar el índice
             return ['background-color: #E8D7FA'] * len(row)
         else:
             return [''] * len(row)
 
     # Aplicar estilo de resaltado
+    
     styled_table = resultado.style.apply(resaltar_sonora, axis=1)
-    styled_table = styled_table.format({'Producción (Hectárea)': '{:.2f}', 'Precio Total (MDP)': '{:.4f}','Rendimiento (MDP)':'{:.2f}'})
-        
+    styled_table = styled_table.format({'Producción (Toneladas)': '{:.2f}', 'Precio Total (MDP)': '{:.4f}','Rendimiento':'{:.2f}','Rendimiento Economico (MDP)':'{:.2f}'})
+    
     # Mostrar el DataFrame en Streamlit
-    st.write(styled_table)
+    st.write(styled_table.set_caption('Estado'),unsafe_allow_html=True, width=400)
 
     if opcion_tiempo == 'Historico':
         precio_total_tiempo_txt = ' desde el 2020 hasta el año actual.'
@@ -341,6 +427,9 @@ with col1_2:
         precio_total_tiempo_txt = ' en el año actual ' + str(datetime.now().year) + '.'
 
     st.markdown(f'##### La producción total de {opcion_cultivo} en todo México es de {round(precio_total_pais,4)} MDP del cual Sonora ha aportado <span style="color: #9867CB">{round(precio_total_son,4)}</span> MDP{precio_total_tiempo_txt}',unsafe_allow_html=True)
+
+
+
 
 with col2_2:
     st.markdown(f'## Valor de la producción total de {opcion_cultivo} en Sonora')
@@ -360,7 +449,7 @@ with col2_2:
     fig = px.line(df_merge_valor_produccion, x='Fecha', y='Produccion', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
     fig.update_layout(
         xaxis_title='Fecha',
-        yaxis_title='Producción',
+        yaxis_title='Producción (Toneladas)',
         xaxis=dict(tickangle=45),
         showlegend=False
     )
@@ -383,7 +472,7 @@ with col2_2:
     fig = px.line(df_merge_valor_produccion, x='Fecha', y='Rendimiento', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
     fig.update_layout(
         xaxis_title='Fecha',
-        yaxis_title='Rendimiento',
+        yaxis_title='Rendimiento (MDP)',
         xaxis=dict(tickangle=45),
         showlegend=False
     )
@@ -413,10 +502,10 @@ with col2_4:
         
     # Graficar con Plotly Express
     fig = px.line(sembrada_vs_cosechada, x='Fecha', y=['Superficie Siniestrada','Superficie Cosechada', 'Superficie Sembrada'], 
-                labels={'Fecha': 'Fecha', 'value': 'Superficie (unidades)'})
+                labels={'Fecha': 'Fecha', 'value': 'Superficie (Hectáreas)'})
 
     # Configuraciones adicionales si es necesario
-    fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (unidades)', legend_title='Tipo de Superficie')
+    fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (Hectáreas)', legend_title='Tipo de Superficie')
     fig.update_traces(mode='lines')
 
     # Mostrar la figura en Streamlit
@@ -474,16 +563,29 @@ with col2_3:
 
     sembrada_vs_cosechada = sembrada_vs_cosechada.loc[sembrada_vs_cosechada['Municipio']==opcion_mun]
         
-    # Graficar con Plotly Express
-    fig = px.line(sembrada_vs_cosechada, x='Año', y=['Superficie Siniestrada', 'Superficie Sembrada','Superficie Cosechada'], 
-                labels={'Fecha': 'Fecha', 'value': 'Superficie (Hectarias)'})
+    # # Graficar con Plotly Express
+    # fig = px.line(sembrada_vs_cosechada, x='Año', y=['Superficie Siniestrada', 'Superficie Sembrada','Superficie Cosechada'], 
+    #             labels={'Fecha': 'Fecha', 'value': 'Superficie (Hectáreas)'})
 
-    # Configuraciones adicionales si es necesario
-    fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (Hectarias)', legend_title='Tipo de Superficie')
-    fig.update_traces(mode='lines')
+    # # Configuración para mostrar solo años enteros en el eje x
+    # fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (Hectáreas)', legend_title='Tipo de Superficie')
+    # fig.update_xaxes(tickmode='linear', tick0=sembrada_vs_cosechada['Año'].min(), dtick=1)  # Configuración para mostrar solo enteros en el eje x
 
-    # Mostrar la figura en Streamlit
+    # # Actualizar el modo de las líneas a mostrar
+    # fig.update_traces(mode='lines')
+
+    # # Mostrar la figura en Streamlit
+    # st.plotly_chart(fig)
+
+        
+    fig = px.bar(sembrada_vs_cosechada, x='Año', y=['Superficie Siniestrada', 'Superficie Sembrada','Superficie Cosechada'], 
+                labels={'Fecha': 'Fecha', 'value': 'Superficie (Hectarias)'}, barmode='group')
+
+    fig.update_layout(xaxis_title='Año', yaxis_title='Superficie (Hectarias)', legend_title='Tipo de Superficie')
+    fig.update_xaxes(tickmode='linear', tick0=sembrada_vs_cosechada['Año'].min(), dtick=1)  # Configuración para mostrar solo enteros en el eje x
+
     st.plotly_chart(fig)
+
 
 
 col1_5, col2_5, col3_5 = st.columns([2,5,2])
@@ -495,14 +597,13 @@ with col2_5:
     num_meses = len(potencial_cosechar['Mes'].unique())
     rendimiento_promedio = potencial_cosechar['Rendimiento'].sum()/num_meses
     potencial_cosechar_kpi = (potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum()+potencial_cosechar['Superficie Siniestrada'].sum()))*rendimiento_promedio
-    # Crear una visualización tipo tarjeta con Matplotlib en Streamlit
-    fig, ax = plt.subplots(figsize=(1, 0.5))
-    ax.text(0.5, 0.5, '$'+str("{:,}".format(round(potencial_cosechar_kpi,2))), ha='center', va='center', fontsize=30)
+    
+    fig, ax = plt.subplots(figsize=(5, 0.1), dpi=500)
+    ax.text(0.3, 0.3, '$'+str("{:,}".format(round(potencial_cosechar_kpi,2))), ha='center', va='center', fontsize=20)
     # ax.set_title("Producción Total")
     ax.axis('off')  # Desactivar ejes
     plt.tight_layout()
 
-    # Mostrar la visualización en Streamlit
     st.pyplot(fig)
 
 
