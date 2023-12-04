@@ -28,13 +28,20 @@ Con este objetivo en mente y con la intención de estructurar nuestras visualiza
 
 ¿Para qué época/cultivo/localidad el comportamiento económico sugiere la posibilidad de que se generen excedentes?
 
-Para llevar a cabo cada uno de los análisis, empleamos widgets que posibilitaron un examen interactivo del comportamiento de las diversas variables en nuestros datos. Estos widgets nos permitieron explorar de manera dinámica los valores temporales, geográficos y de cultivo. A raíz de este análisis exhaustivo de todas las variables, decidimos focalizar nuestro enfoque exclusivamente en nuestro territorio estatal, Sonora, considerando sus municipios y los cultivos que son activamente producidos aquí.
+Para llevar a cabo cada uno de los análisis, empleamos widgets que posibilitaron un examen interactivo del comportamiento de las diversas variables en nuestros datos. Estos widgets nos permitieron explorar de manera dinámica los valores temporales, geográficos y de cultivo. A raíz de este análisis exhaustivo de todas las variables, decidimos focalizar nuestro enfoque exclusivamente en nuestro territorio estatal, Sonora, considerando sus municipios y los cultivos que son activamente producidos aquí. A continuación de describe cada una de las gráficas empleadas. Se utiliza como ejemplo a la Uva, cultivo para el cúal Sonora se posiciona como el principal estado productor.  
 '''
-
 
 st.markdown(body)
 
 st.divider()
+
+body = '''
+## Análisis Temporal
+
+#### Gráfica de valores mensuales de las distintas variables y cultivos
+'''
+
+st.markdown(body)
 
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot1.png'
 
@@ -42,11 +49,23 @@ response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
 
+body = '''
+#### Gráfica de valores acumulados de las distintas variables y cultivos
+'''
+
+st.markdown(body)
+
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot2.png'
 
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
+
+body = '''
+#### Gráfica de mejores meses en términos de las distintas variables y cultivos
+'''
+
+st.markdown(body)
 
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot3.png'
 
@@ -54,11 +73,23 @@ response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
 
+body = '''
+#### Gráfica de evolución de las distintas variables y cultivos a lo largo del tiempo
+'''
+
+st.markdown(body)
+
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot4.png'
 
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
+
+body = '''
+#### Gráfica de correlación entre variables a lo largo del tiempo para los distintos cultivos
+'''
+
+st.markdown(body)
 
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot5.png'
 
@@ -66,11 +97,28 @@ response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
 
+
+st.divider()
+
+body = '''
+## Análisis Geográfico
+
+#### Correlación entre variables SIAP y SNIIM en los distintos estados del país
+'''
+
+st.markdown(body)
+
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot6.png'
 
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
+
+body = '''
+#### Gráfica de mejores estados en términos de las distintas variables y cultivos
+'''
+
+st.markdown(body)
 
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot7.png'
 
@@ -78,17 +126,35 @@ response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
 
+body = '''
+#### Treemap de municipios en términos de las distintas variables y cultivos
+'''
+
+st.markdown(body)
+
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot8.png'
 
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
 
+body = '''
+#### Gráfica de mejores municipios en términos de las distintas variables y cultivos
+'''
+
+st.markdown(body)
+
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot9.png'
 
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
+
+body = '''
+#### Gráfica de mejores cultivos en términos de las distintas variables y años
+'''
+
+st.markdown(body)
 
 url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot10.png'
 
