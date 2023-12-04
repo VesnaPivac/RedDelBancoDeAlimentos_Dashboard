@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from PIL import Image
+import requests
+from io import BytesIO
 
 st.title('Exploración y Análisis de Datos')
 
@@ -34,8 +36,11 @@ st.markdown(body)
 
 st.divider()
 
-image = Image.open('ovalin_1.jpg')
-st.image(image, caption='Educative')
+url = 'https://raw.githubusercontent.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/main/images/plot1.png'
+
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+st.image(img, caption='Educative')
 
 
 
