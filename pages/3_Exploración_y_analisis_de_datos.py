@@ -28,7 +28,7 @@ Con este objetivo en mente y con la intención de estructurar nuestras visualiza
 
 ¿Para qué época/cultivo/localidad el comportamiento económico sugiere la posibilidad de que se generen excedentes?
 
-Para llevar a cabo cada uno de los análisis, empleamos widgets que posibilitaron un examen interactivo del comportamiento de las diversas variables en nuestros datos. Estos widgets nos permitieron explorar de manera dinámica los valores temporales, geográficos y de cultivo. A raíz de este análisis exhaustivo de todas las variables, decidimos focalizar nuestro enfoque exclusivamente en nuestro territorio estatal, Sonora, considerando sus municipios y los cultivos que son activamente producidos aquí. A continuación de describe cada una de las gráficas empleadas. Se utiliza como ejemplo a la Uva, cultivo para el cúal Sonora se posiciona como el principal estado productor.  
+Para llevar a cabo cada uno de los análisis, empleamos widgets que posibilitaron un examen interactivo del comportamiento de las diversas variables en nuestros datos. Estos widgets nos permitieron explorar de manera dinámica los valores temporales, geográficos y de cultivo. A raíz de este análisis exhaustivo de todas las variables, decidimos focalizar nuestro enfoque exclusivamente en nuestro territorio estatal, Sonora, considerando sus municipios y los cultivos que son activamente producidos aquí. A continuación se presenta cada una de las gráficas empleadas. Se utiliza como ejemplo a la Uva, cultivo para el cual Sonora se posiciona como el principal estado productor. Cabe mencionar que, aunque el análisis económico no tiene su propia sección, este se realizó mediante la manipulación pertinente de las variables en los widgets de las gráficas  
 '''
 
 st.markdown(body)
@@ -39,6 +39,8 @@ body = '''
 ## Análisis Temporal
 
 #### Gráfica de valores mensuales de las distintas variables y cultivos
+
+De manera general, en esta gráfica resalta le hecho de que cada cultivo tiene distintas épocas del año destinadas a sus procesos agrícolas. Además, permite comparar cómo los valores, tanto de las variables agrícolas como las económicas, de cada época han variado en los distintos años analizados. 
 
 
 '''
@@ -56,6 +58,7 @@ body = '''
 
 #### Gráfica de valores acumulados de las distintas variables y cultivos
 
+Aunque en la visualización previa podemos darnos una idea de los cambios que han ocurrido a través de los años, esta gráfica acumulada permite realizar una comparación más concreta. Esto es porque al comparar simplemente las barras de los meses de diciembre, podemos saber en qué año los valores fueron mayores o menores.
 
 '''
 
@@ -72,6 +75,7 @@ body = '''
 
 #### Gráfica de mejores meses en términos de las distintas variables y cultivos
 
+De manera más cuantitativa, esta visualización nos permite saber cuál, y en qué magnitud, es la mejor época de cada cultivo en términos de las distintas variables analizadas.
 
 '''
 
@@ -87,6 +91,8 @@ body = '''
 
 
 #### Gráfica de evolución de las distintas variables y cultivos a lo largo del tiempo
+
+Esta visualización arroja una idea global de cómo han evolucionado las distintas variables de cada cultivo a lo largo de todo el periodo de interés. Esto permite identificar cambios abruptos en épocas particulares, dando a pauta que futuros proyecto se interesen en entender las causas detrás de dichos cambios.
 
 
 '''
@@ -104,6 +110,7 @@ body = '''
 
 #### Gráfica de correlación entre variables a lo largo del tiempo para los distintos cultivos
 
+Esta es una versión duplicada de la visualización anterior, permitiendo inspeccionar la posible correlación entre variables económicas y/o agrícolas de los cultivos.
 
 '''
 
@@ -123,6 +130,7 @@ body = '''
 
 #### Correlación entre variables SIAP y SNIIM en los distintos estados del país
 
+Esta visualización tiene dos utilidades principales. La primera es que permite apreciar cómo se distribuyen los valores de las variables agrícolas y ecónomicas en los distintos estados del país. La segunda, siguiendo con la linea de la gráfica previa, permite visualizar posibles correlaciones entre las variables agrícolas y económicas a lo largo del territorio nacional. 
 
 '''
 
@@ -138,6 +146,8 @@ body = '''
 
 
 #### Gráfica de mejores estados en términos de las distintas variables y cultivos
+
+Esta visualización es un aterrizado cuantitativo de lo visto en la gráfica anterior. Nos ofrece un ordenamiento de los estados en términos de las distintas variables analizadas.
 
 
 '''
@@ -155,6 +165,7 @@ body = '''
 
 #### Treemap de municipios en términos de las distintas variables y cultivos
 
+En esta gráfica podemos observar qué municipios, y en qué magnitud, tienen el dominio de los distintos cultivos en términos de sus variables agrícolas.  
 
 '''
 
@@ -171,6 +182,7 @@ body = '''
 
 #### Gráfica de mejores municipios en términos de las distintas variables y cultivos
 
+Esta visualización nos permite saber el orden de los municipios de manera cuantificada en términos de las variables económicas y agrícolas. 
 
 '''
 
@@ -188,6 +200,8 @@ body = '''
 ## Análisis de cultivo
 
 #### Gráfica de mejores cultivos en términos de las distintas variables y años
+
+Esta gráfica nos permite identificar de manera cuantitativa, qué cultivos tienen mayor dominio en términos de sus variables económicas y agrícolas.
 
 
 '''
