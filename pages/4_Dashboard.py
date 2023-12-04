@@ -562,8 +562,10 @@ with col4_5:
     num_meses2 = len(potencial_cosechar2['Mes'].unique())
     rendimiento_promedio2 = potencial_cosechar2['Rendimiento'].sum()/num_meses2
 
-    potencial_cosechar_kpi2 = ((potencial_cosechar2['Superficie Sembrada'].sum() - (potencial_cosechar2['Superficie Cosechada'].sum() + potencial_cosechar2['Superficie Siniestrada'].sum())) * rendimiento_promedio) * potencial_cosechar2['Precio Frecuente'].sum()
+    potencial_cosechar2['potencial_cosechar_kpi2'] = ((potencial_cosechar2['Superficie Sembrada'] - (potencial_cosechar2['Superficie Cosechada']+ potencial_cosechar2['Superficie Siniestrada'])) * rendimiento_promedio) * potencial_cosechar2['Precio Frecuente']
     
+    potencial_cosechar_kpi2 = potencial_cosechar2['potencial_cosechar_kpi2'].sum()
+
     # Convertir a formato de texto con comas separadoras para los miles
     potencial_cosechar_kpi2_text = "{:,.2f}".format(round(float(potencial_cosechar_kpi2), 2))
 
