@@ -7,11 +7,19 @@ st.title('Exploración y Análisis de Datos')
 body = '''
 A partir de los datos previamente procesados, esta sección se enfoca en analizar visualmente las relaciones entre las diversas variables que componen nuestros datos. En este punto, es crucial recordar el objetivo principal del proyecto: identificar patrones que indiquen oportunidades para optimizar los procesos de recolección de alimentos por parte de la red BAMX.
 
-Con este objetivo en mente y con la intención de organizar nuestras visualizaciones de manera estructurada, nos planteamos las siguientes preguntas. Buscaremos responder a estas interrogantes a través de la inspección visual de los datos:
+Con este objetivo en mente y con la intención de estructurar nuestras visualizaciones de manera organizada, desglosamos nuestro análisis en tres categorías principales: análisis temporal, geográfico y de cultivo. Para cada análisis, nos proponemos abordar las siguientes preguntas mediante la inspección visual de los datos:
 
-- ¿En qué épocas del año es más probable que se generen excedentes?
-- ¿En qué localidades existe una mayor probabilidad de acumulación de excedentes?
-- ¿Qué cultivos tienden a ser producidos en exceso con mayor frecuencia?
+**Análisis Temporal**
+
+¿En qué épocas del año es más probable que se generen excedentes?
+
+**Análisis Geográfico**
+
+¿En qué localidades existe una mayor probabilidad de acumulación de excedentes?
+
+**Análisis de Cultivo**
+
+¿Qué cultivos muestran una tendencia a ser producidos en exceso con mayor frecuencia?
 '''
 
 st.markdown(body)
