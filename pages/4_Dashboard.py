@@ -588,7 +588,7 @@ with col2_3:
 
 
 
-col1_5, col2_5, col3_5 = st.columns([2,5,2])
+col1_5, col2_5, col3_5 = st.columns([3,5,2])
 
 with col2_5:
     st.markdown(f"## Superficie Potencial por Cosechar")
@@ -599,7 +599,7 @@ with col2_5:
     potencial_cosechar_kpi = (potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum()+potencial_cosechar['Superficie Siniestrada'].sum()))*rendimiento_promedio
     
     fig, ax = plt.subplots(figsize=(5, 0.1), dpi=500)
-    ax.text(0.3, 0.3, '$'+str("{:,}".format(round(potencial_cosechar_kpi,2))), ha='center', va='center', fontsize=20)
+    ax.text(0.6, 0.6, ' $'+str("{:,}".format(round(potencial_cosechar_kpi,2))), ha='center', va='center', fontsize=20)
     # ax.set_title("Producción Total")
     ax.axis('off')  # Desactivar ejes
     plt.tight_layout()
