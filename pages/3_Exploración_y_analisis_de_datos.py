@@ -1,13 +1,14 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from PIL import Image
 
 st.title('Exploración y Análisis de Datos')
 
 body = '''
-A partir de los datos previamente procesados, esta sección se enfoca en analizar visualmente las relaciones entre las diversas variables que componen nuestros datos. En este punto, es crucial recordar el objetivo principal del proyecto: identificar patrones que indiquen oportunidades para optimizar los procesos de recolección de alimentos por parte de la red BAMX.
+Basándonos en los datos previamente procesados, esta sección se centra en el análisis visual de las relaciones entre las diversas variables que componen nuestros datos. En este punto, es fundamental recordar el objetivo principal del proyecto: identificar patrones que sugieran oportunidades para optimizar los procesos de recolección de alimentos por parte de la red BAMX.
 
-Con este objetivo en mente y con la intención de estructurar nuestras visualizaciones de manera organizada, desglosamos nuestro análisis en tres categorías principales: análisis temporal, geográfico y de cultivo. Para cada análisis, nos proponemos abordar las siguientes preguntas mediante la inspección visual de los datos:
+Con este objetivo en mente y con la intención de estructurar nuestras visualizaciones de manera organizada, desglosamos nuestro análisis en tres categorías principales: análisis temporal, geográfico y de cultivo. Además, se aborda una cuarta categoría económica, con el propósito de examinar las tres categorías anteriores desde un enfoque diferente. Para cada análisis, nos proponemos abordar las siguientes preguntas mediante la inspección visual de los datos:
 
 **Análisis Temporal**
 
@@ -20,11 +21,22 @@ Con este objetivo en mente y con la intención de estructurar nuestras visualiza
 **Análisis de Cultivo**
 
 ¿Qué cultivos muestran una tendencia a ser producidos en exceso con mayor frecuencia?
+
+**Análisis Económico**
+
+¿Para qué época/cultivo/localidad el comportamiento económico sugiere la posibilidad de que se generen excedentes?
+
+Para llevar a cabo cada uno de los análisis, empleamos widgets que posibilitaron un examen interactivo del comportamiento de las diversas variables en nuestros datos. Estos widgets nos permitieron explorar de manera dinámica los valores temporales, geográficos y de cultivo. A raíz de este análisis exhaustivo de todas las variables, decidimos focalizar nuestro enfoque exclusivamente en nuestro territorio estatal, Sonora, considerando sus municipios y los cultivos que son activamente producidos aquí.
 '''
+
 
 st.markdown(body)
 
 st.divider()
+
+image = Image.open('ovalin_1.jpg')
+st.image(image, caption='Educative')
+
 
 
 # '''
