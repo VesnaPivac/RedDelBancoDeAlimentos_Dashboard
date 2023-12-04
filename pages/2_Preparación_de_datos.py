@@ -76,13 +76,13 @@ body = '''
 
 Los pasos que conformaron el proceso de preparación de los datos del SNIIM fueron:
 
-- 1. Aplicación de filtros
-- 2. Ajuste de los tipos de datos
-- 3. Análisis de valores faltantes
-- 4. Ajuste de nombres de estados
-- 5. Ajuste de nombre de cultivos
-- 6. Obtención de precios mensuales
-- 7. Análisis de valores atípicos
+1. Aplicación de filtros
+2. Ajuste de los tipos de datos
+3. Análisis de valores faltantes
+4. Ajuste de nombres de estados
+5. Ajuste de nombre de cultivos
+6. Obtención de precios mensuales
+7. Análisis de valores atípicos
 
 #### 1. Aplicación de filtros
 
