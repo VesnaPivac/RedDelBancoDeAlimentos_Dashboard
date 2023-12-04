@@ -39,6 +39,8 @@ body = '''
 ## Análisis Temporal
 
 #### Gráfica de valores mensuales de las distintas variables y cultivos
+
+
 '''
 
 st.markdown(body)
@@ -50,7 +52,11 @@ img = Image.open(BytesIO(response.content))
 st.image(img)
 
 body = '''
+
+
 #### Gráfica de valores acumulados de las distintas variables y cultivos
+
+
 '''
 
 st.markdown(body)
@@ -62,7 +68,11 @@ img = Image.open(BytesIO(response.content))
 st.image(img)
 
 body = '''
+
+
 #### Gráfica de mejores meses en términos de las distintas variables y cultivos
+
+
 '''
 
 st.markdown(body)
@@ -74,7 +84,11 @@ img = Image.open(BytesIO(response.content))
 st.image(img)
 
 body = '''
+
+
 #### Gráfica de evolución de las distintas variables y cultivos a lo largo del tiempo
+
+
 '''
 
 st.markdown(body)
@@ -86,7 +100,11 @@ img = Image.open(BytesIO(response.content))
 st.image(img)
 
 body = '''
+
+
 #### Gráfica de correlación entre variables a lo largo del tiempo para los distintos cultivos
+
+
 '''
 
 st.markdown(body)
@@ -104,6 +122,8 @@ body = '''
 ## Análisis Geográfico
 
 #### Correlación entre variables SIAP y SNIIM en los distintos estados del país
+
+
 '''
 
 st.markdown(body)
@@ -115,7 +135,11 @@ img = Image.open(BytesIO(response.content))
 st.image(img)
 
 body = '''
+
+
 #### Gráfica de mejores estados en términos de las distintas variables y cultivos
+
+
 '''
 
 st.markdown(body)
@@ -127,7 +151,11 @@ img = Image.open(BytesIO(response.content))
 st.image(img)
 
 body = '''
+
+
 #### Treemap de municipios en términos de las distintas variables y cultivos
+
+
 '''
 
 st.markdown(body)
@@ -139,7 +167,11 @@ img = Image.open(BytesIO(response.content))
 st.image(img)
 
 body = '''
+
+
 #### Gráfica de mejores municipios en términos de las distintas variables y cultivos
+
+
 '''
 
 st.markdown(body)
@@ -150,8 +182,14 @@ response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 st.image(img)
 
+st.divider()
+
 body = '''
+## Análisis de cultivo
+
 #### Gráfica de mejores cultivos en términos de las distintas variables y años
+
+
 '''
 
 st.markdown(body)
