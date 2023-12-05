@@ -252,6 +252,8 @@ with col1_1:
 
         # Mostrar el gráfico en Streamlit
     st.plotly_chart(fig)
+
+    mayor_productor = top3.iloc[-1]['Entidad']
     
     # # Mostrar el gráfico en Streamlit
     # st.plotly_chart(fig)
@@ -266,10 +268,13 @@ with col1_1:
 
     # porcentaje_sonora = pct_mexico_son_text
     # # if filtro_sonora.any():
-    # if mayor_productor == 'Sonora':
-    #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #9867CB">{porcentaje_sonora}</span> de la producción total del país',unsafe_allow_html=True)
-    # else:
-    #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{porcentaje_top1}</span> de la producción total del país mientras que Sonora aporta el <span style="color: #9867CB">{porcentaje_sonora}</span> del total de producción.',unsafe_allow_html=True)
+
+    porcentaje_sonora = float(top3.loc[top3['Entidad'] == 'Sonora', 'Porcentaje'].str.rstrip('%').iloc[0])
+    if mayor_productor == 'Sonora':
+        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con una aportación del <span style="color: #9867CB">{str(porcentaje_sonora) + "%"}</span> de la producción total del país',unsafe_allow_html=True)
+    else:
+        porcentaje_top1 = float(top3.loc[top3['Entidad'] == mayor_productor, 'Porcentaje'].str.rstrip('%').iloc[0])
+        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{str(porcentaje_top1)+"%"}</span> de la producción total del país mientras que Sonora aporta el <span style="color: #9867CB">{str(porcentaje_sonora)+"%"}</span> del total de producción.',unsafe_allow_html=True)
     # # else:
     # #     porcentaje_sonora = produccion_total/(100*prd_son)
     # #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{porcentaje_top1}</span> de la producción total del país.',unsafe_allow_html=True)
