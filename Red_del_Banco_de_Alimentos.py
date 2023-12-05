@@ -31,7 +31,7 @@ Las visualizaciones se diseñan metodológicamente para destacar aspectos releva
 # image = Image.open('')
 st.write(body)
 
-st.text('''El codigo de este proyecto se encuentra en el repositorio de Github:
+st.markdown('''El codigo de este proyecto se encuentra en el repositorio de Github:
 [Proyecto Red de Banco de Alimentos de México](https://github.com/josemal98/Proyecto_Ing_Caract)
 [Aplicación de Streamlit](https://github.com/VesnaPivac/RedDelBancoDeAlimentos_Dashboard/tree/main)
 '''')
