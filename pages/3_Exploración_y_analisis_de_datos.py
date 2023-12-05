@@ -12,21 +12,10 @@ Basándonos en los datos previamente procesados, esta sección se centra en el a
 
 Con este objetivo en mente y con la intención de estructurar nuestras visualizaciones de manera organizada, desglosamos nuestro análisis en tres categorías principales: análisis temporal, geográfico y de cultivo. Además, se aborda una cuarta categoría económica, con el propósito de examinar las tres categorías anteriores desde un enfoque diferente. Para cada análisis, nos proponemos abordar las siguientes preguntas mediante la inspección visual de los datos:
 
-**Análisis Temporal**
-
-¿En qué épocas del año es más probable que se generen excedentes?
-
-**Análisis Geográfico**
-
-¿En qué localidades existe una mayor probabilidad de acumulación de excedentes?
-
-**Análisis de Cultivo**
-
-¿Qué cultivos muestran una tendencia a ser producidos en exceso con mayor frecuencia?
-
-**Análisis Económico**
-
-¿Para qué época/cultivo/localidad el comportamiento económico sugiere la posibilidad de que se generen excedentes?
+- **Análisis Temporal**: ¿En qué épocas del año es más probable que se generen excedentes?
+- **Análisis Geográfico**: ¿En qué localidades existe una mayor probabilidad de acumulación de excedentes?
+- **Análisis de Cultivo**: ¿Qué cultivos muestran una tendencia a ser producidos en exceso con mayor frecuencia?
+- **Análisis Económico**: ¿Para qué época/cultivo/localidad el comportamiento económico sugiere la posibilidad de que se generen excedentes?
 
 Para llevar a cabo cada uno de los análisis, empleamos widgets que posibilitaron un examen interactivo del comportamiento de las diversas variables en nuestros datos. Estos widgets nos permitieron explorar de manera dinámica los valores temporales, geográficos y de cultivo. A raíz de este análisis exhaustivo de todas las variables, decidimos focalizar nuestro enfoque exclusivamente en nuestro territorio estatal, Sonora, considerando sus municipios y los cultivos que son activamente producidos aquí. A continuación se presenta cada una de las gráficas empleadas. Se utiliza como ejemplo a la Uva, cultivo para el cual Sonora se posiciona como el principal estado productor. Cabe mencionar que, aunque el análisis económico no tiene su propia sección, este se realizó mediante la manipulación pertinente de las variables en los widgets de las gráficas  
 '''
