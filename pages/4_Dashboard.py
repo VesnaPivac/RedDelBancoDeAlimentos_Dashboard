@@ -12,32 +12,26 @@ import requests
 
 st.title('Agricultura Sonorense: Datos Esenciales de Nuestra Producción')
 # st.markdown('## Agricultura Sonorense: Datos Esenciales de Nuestra Producción')
-st.divider()
 
-
-# Funciones
-@st.cache_data
-def load_data_SIAP_SNIIM():
-    data = pd.read_parquet('./data/SIAP_SNIIM_preprocessed.parquet')
-    return data
 
 # Lectura de datos
-df_merge = load_data_SIAP_SNIIM()
+df_merge = pd.read_parquet('./data/SIAP_SNIIM_preprocessed.parquet')
 
 
 # Filtros
-curr_year = datetime.now().year
+# curr_year = datetime.now().year
 
 curr_year = datetime.now().year
-tiempos = ['Año Actual', 'Ultimos 3 años','Historico']
-opcion_tiempo = st.selectbox('Periodo:', tiempos, index=0,  placeholder="Choose an option")
-tiempos_dict = {'Año Actual':datetime.now().year,'Ultimos 3 años':[datetime.now().year,datetime.now().year-1,datetime.now().year-2]}
-if(opcion_tiempo == 'Historico'):
-    df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')]
-elif(opcion_tiempo == 'Ultimos 3 años'):
-    df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')&(df_merge['Año'].isin(tiempos_dict[opcion_tiempo]))]
-elif(opcion_tiempo == 'Año Actual'):
-    df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')&(df_merge['Año']==curr_year)]
+# tiempos = ['Año Actual', 'Ultimos 3 años','Historico']
+# opcion_tiempo = st.selectbox('Periodo:', tiempos, index=0,  placeholder="Choose an option")
+# tiempos_dict = {'Año Actual':datetime.now().year,'Ultimos 3 años':[datetime.now().year,datetime.now().year-1,datetime.now().year-2]}
+# if(opcion_tiempo == 'Historico'):
+#     df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')]
+# elif(opcion_tiempo == 'Ultimos 3 años'):
+#     df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')&(df_merge['Año'].isin(tiempos_dict[opcion_tiempo]))]
+# elif(opcion_tiempo == 'Año Actual'):
+opcion_tiempo = 'Año Actual'
+df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')&(df_merge['Año']==curr_year)]
     
 # Calcular la suma de la producción por 'Cultivo'
 suma_por_cultivo = df_merge_cultivo.groupby('Cultivo')['Produccion'].sum()
@@ -48,7 +42,7 @@ estados = np.sort(cultivos_con_produccion)
 opcion_cultivo = st.selectbox('Cultivo:', estados, index=0,  placeholder="Choose an option")
 
 
-
+st.divider()
 #-----------------------------------------SECCION 1 -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 if(opcion_tiempo == 'Historico'):
@@ -119,6 +113,9 @@ with col2:
     else:
         df_filtered = df_estados[(df_estados['Cultivo'] == opcion_cultivo)]
     
+    # df_filtered = df_filtered[df_filtered['Cultivo'] == opcion_cultivo][['Entidad', 'Produccion','Produccion (%)']]
+    # df_estados = df_estados[df_estados['Cultivo'] == opcion_cultivo][['Entidad', 'Produccion','Produccion (%)']]
+
     # Calcula la producción por entidad usando el DataFrame filtrado
     produccion_por_entidad = df_filtered.groupby('Entidad')['Produccion'].sum()
 
@@ -185,116 +182,79 @@ with col1_1:
     st.markdown(f"## Principales Entidades Contribuyentes a la Producción de {opcion_cultivo}")
     st.text(f"Porcentaje con respecto a la producción total")
 
-    
+    df = pd.read_parquet('./data/Estados.parquet')
      
-    # df_estados_top3 = pd.read_parquet('./data/Estados.parquet')
-    # if opcion_tiempo == 'Año Actual':
-    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Año'] == curr_year)&(df_estados_top3['Cultivo'] == opcion_cultivo)]
-    # elif opcion_tiempo == 'Ultimos 3 años':
-    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Año'].isin(tiempos_dict[opcion_tiempo]))&(df_estados_top3['Cultivo'] == opcion_cultivo)]
-    # else:
-    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Cultivo'] == opcion_cultivo)]
+    if opcion_tiempo == 'Año Actual':
+        df = df[(df['Año'] == curr_year)]
+    elif opcion_tiempo == 'Ultimos 3 años':
+        df = df[(df['Año'].isin(tiempos_dict[opcion_tiempo]))]
     
+    # Filtrar el DataFrame por el cultivo deseado y seleccionar las columnas 'Entidad' y 'Produccion'
+    filtered_df = df[df['Cultivo'] == opcion_cultivo][['Entidad', 'Produccion']]
+
+    # Calcular la suma de la producción por entidad
+    produccion_por_entidad = filtered_df.groupby('Entidad')['Produccion'].sum()
+
+    # Calcular la producción total de todos los cultivos
+    produccion_total = produccion_por_entidad.sum()
+
+    # Calcular la producción porcentaje de la producción total por entidad
+    produccion_por_entidad = produccion_por_entidad.reset_index()  # Reiniciar el índice del DataFrame
+    produccion_por_entidad['Porcentaje'] = (produccion_por_entidad['Produccion'] * 100) / produccion_total
+
+
+    top3 = produccion_por_entidad.sort_values(by='Produccion',ascending=False)
+
+    if 'Sonora' in (top3['Entidad'].head(3).tolist()):
+        top3 = top3.head(3)
+    else:
+        top_son = top3.loc[top3['Entidad']=='Sonora']
+        top3 = top3.head(3)
+        top3 = pd.concat([top3,top_son],ignore_index=True)
+
+    top3['Porcentaje'] = top3['Porcentaje'].round(3).astype(str) + '%'
     
-    # # Calcular la producción total para el cultivo seleccionado en todos los estados
-    # produccion_total = df_estados_top3['Produccion'].sum()
+    top3 = top3.sort_values('Produccion', ascending=True)
 
-    # # Calcular la producción total por entidad y ordenar de mayor a menor
-    # df_estados_top3 = df_estados_top3.groupby('Entidad')['Produccion'].sum().sort_values(ascending=False)
+    # Asignar colores según las condiciones especificadas
+    top3['Color'] = 'gray'  # Por defecto, todas las filas tienen el color gris
 
-    # # Seleccionar solo los primeros 3 elementos con mayor producción
-    # top_3_entidades = df_estados_top3.head(3)
+    # Si 'Sonora' está en el top 1
+    if top3.iloc[-1]['Entidad'] == 'Sonora':
+        top3.loc[top3['Entidad'] == 'Sonora', 'Color'] = 'purple'  # Asignar morado a 'Sonora' en el top 1
+
+    # Si 'Sonora' está en el top 3 pero no en el top 1
+    elif 'Sonora' in top3['Entidad'].tolist()[:3]:
+        top3.loc[top3['Entidad'] == 'Sonora', 'Color'] = 'purple'  # Asignar morado a 'Sonora' en el top 3
+        top3.loc[top3.index[-1], 'Color'] = 'blue'  # Asignar azul al top 1
+
+
+    # if len(top3) == 3:
+    #     colors = ['#9867CB' if top3.iloc[0]['Entidad'] == 'Sonora' else 'gray',
+    #           '#9867CB' if top3.iloc[1]['Entidad'] == 'Sonora' else 'gray',
+    #           '#81B4E3' if top3.iloc[2]['Entidad'] == 'Sonora' else '#9867CB']
+    # else:  # Si son 4 valores en el DataFrame
+    #     max_value = top3['Produccion'].max()
+    #     colors = ['#9867CB' if row['Entidad'] == 'Sonora' else ('#81B4E3' if row['Produccion'] == max_value else 'gray') for _, row in top3.iterrows()]
+
+    # Crear el gráfico con Plotly Express
+    fig = px.bar(top3, x='Produccion', y='Entidad', orientation='h', color='Color',
+                 text=top3['Porcentaje'],
+                color_discrete_map={'gray': 'gray', 'purple': '#9867CB', 'blue': '#81B4E3'},
+                labels={'Produccion': 'Producción (Toneladas)', 'Entidad': 'Entidad'})
     
+    fig.update_layout(showlegend=False)
+    
+    # Personalizar el diseño de texto (posición y formato)
+    fig.update_traces(textposition='outside')  # Mostrar el texto fuera de las barras
+    fig.update_layout(xaxis=dict(title='Producción', showgrid=True, gridcolor='lightgray'))  # Ajustar la apariencia del eje X
 
-    # data_plot = {
-    #     'Entidad': top_3_entidades.index,
-    #     'Producción Acumulada': top_3_entidades.values,
-    #     'Porcentaje con respecto a la producción total': porcentaje_total.values.round(4)
-    # }
-    # df_plot = pd.DataFrame(data_plot)
-    # df_plot['Porcentaje con respecto a la producción total'] = df_plot['Porcentaje con respecto a la producción total'].astype(str) + '%'
 
-    # # Ordenar de mayor a menor
-    # df_plot = df_plot.sort_values('Producción Acumulada', ascending=True)
-
-    # # Crear gráfico de barras horizontales con Plotly Express
-    # fig = px.bar(df_plot, x='Producción Acumulada', y='Entidad', text='Porcentaje con respecto a la producción total',
-    #             orientation='h',
-    #             labels={'Producción Acumulada': 'Producción Acumulada'})
-    # fig.update_yaxes(title=None)
-        
-    # # Definir colores para todas las barras, excepto la más grande
-    # if df_plot.Entidad[0] == 'Sonora':
-    #     colors = ['gray'] * (len(df_plot) - 1) + ['#9867CB']
-    # else:
-    #     colors = ['gray'] * (len(df_plot) - 1) + ['#81B4E3']  # Todas en gris excepto la más grande en morado
-
-    # # Configurar colores de las barras
-    # fig.update_traces(marker=dict(color=colors))
-    # fig.update_traces(textposition='outside', textfont=dict(color='black'))
-    # fig.update_layout(height=300, width=400)
-
+        # Mostrar el gráfico en Streamlit
+    st.plotly_chart(fig)
+    
     # # Mostrar el gráfico en Streamlit
-    # st.plotly_chart(fig,use_container_width=True) 
-    # mayor_productor = df_plot.Entidad[0] 
-    # if(mayor_productor == 'Sonora'):
-    #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #9867CB">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país',unsafe_allow_html=True)
-    # else:
-    #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{df_plot["Porcentaje con respecto a la producción total"][0]}</span> de la producción total del país mientras que Sonora aporta el <span style="color: #9867CB">{pct_mexico_son_text}</span> del total de producción.',unsafe_allow_html=True)
-
-#-------------------------------------------------------------------------------------------------------------------
-    # df_estados_top3 = pd.read_parquet('./data/Estados.parquet')
-    # if opcion_tiempo == 'Año Actual':
-    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Año'] == curr_year)&(df_estados_top3['Cultivo'] == opcion_cultivo)]
-    # elif opcion_tiempo == 'Ultimos 3 años':
-    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Año'].isin(tiempos_dict[opcion_tiempo]))&(df_estados_top3['Cultivo'] == opcion_cultivo)]
-    # else:
-    #     df_estados_top3 = df_estados_top3[(df_estados_top3['Cultivo'] == opcion_cultivo)]
-    
-    
-    # df_estados_top3 = df_estados_top3.sort_values(by='Produccion', ascending=False)
-
-    # # Seleccionar los tres primeros elementos con mayor producción
-    # if (df_estados_top3.loc[df_estados_top3['Produccion'] == df_estados_top3['Produccion'].max(), 'Entidad'].iloc[0] != 'Sonora'):
-    #     data_son = df_estados_top3.loc[df_estados_top3['Entidad'] == 'Sonora']
-    #     top_3_entidades = df_estados_top3.head(3)
-    #     top_3_entidades = pd.concat((top_3_entidades,data_son))
-  
-
-
-    # data_plot = {
-    #     'Entidad': top_3_entidades['Entidad'],
-    #     'Producción Acumulada': top_3_entidades['Produccion'],
-    #     'Porcentaje con respecto a la producción total': top_3_entidades['Produccion (%)'].round(4)
-    # }
-    # df_plot = pd.DataFrame(data_plot)
-    # df_plot['Porcentaje con respecto a la producción total'] = df_plot['Porcentaje con respecto a la producción total'].astype(str) + '%'
-
-    # # Ordenar de mayor a menor
-    # df_plot = df_plot.sort_values('Producción Acumulada', ascending=True)
-
-    # # Crear gráfico de barras horizontales con Plotly Express
-    # fig = px.bar(df_plot, x='Producción Acumulada', y='Entidad', text='Porcentaje con respecto a la producción total',
-    #             orientation='h',
-    #             labels={'Producción Acumulada': 'Producción Acumulada'})
-    # fig.update_yaxes(title=None)
-        
-    # mayor_productor = df_plot.loc[df_plot['Producción Acumulada'] == df_plot['Producción Acumulada'].max()]['Entidad'].iloc[0]
-    
-    # filtro_sonora = df_plot['Entidad'] == 'Sonora'
-
-    # if filtro_sonora.any():
-    #     porcentaje_sonora = str(df_plot.loc[filtro_sonora, 'Porcentaje con respecto a la producción total'].iloc[0])
-
-    #     if mayor_productor == 'Sonora':
-    #         colors = ['gray'] * (len(df_plot) - 1) + ['#9867CB']
-    #     else:
-    #         colors = ['#9867CB'] + ['gray'] * (len(df_plot) - 2) + ['#81B4E3']  # Todas en gris excepto la más grande en morado
-    #         porcentaje_top1 = str(df_plot.loc[df_plot['Entidad']==mayor_productor,'Porcentaje con respecto a la producción total'].iloc[0])
-    # else:
-    #     colors = ['gray'] * (len(df_plot) - 1) + ['#81B4E3']
-    #     porcentaje_top1 = str(df_plot.loc[df_plot['Entidad']==mayor_productor,'Porcentaje con respecto a la producción total'].iloc[0])
-
+    # st.plotly_chart(fig)
 
     # # Configurar colores de las barras
     # fig.update_traces(marker=dict(color=colors))
@@ -537,10 +497,10 @@ col1_5, col2_5, col3_5, col4_5,col5_5= st.columns([1,2,1,2,1])
 with col2_5:
     st.markdown(f"## Producción restante potencial:")
     potencial_cosechar = df_merge.copy()
-    potencial_cosechar = potencial_cosechar.loc[(potencial_cosechar['Entidad'] == 'Sonora')&(potencial_cosechar['Año']==datetime.now().year)&(potencial_cosechar['Cultivo']==opcion_cultivo)]
+    potencial_cosechar = potencial_cosechar.loc[(potencial_cosechar['Entidad'] == 'Sonora')&(potencial_cosechar['Año']==curr_year)&(potencial_cosechar['Cultivo']==opcion_cultivo)]
     num_meses = len(potencial_cosechar['Mes'].unique())
     rendimiento_promedio = potencial_cosechar['Rendimiento'].sum()/num_meses
-    potencial_cosechar_kpi = (potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum()+potencial_cosechar['Superficie Siniestrada'].sum()))*rendimiento_promedio
+    potencial_cosechar_kpi = (potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum() + potencial_cosechar['Superficie Siniestrada'].sum())) * rendimiento_promedio
     
     fig, ax = plt.subplots(figsize=(5, 0.1), dpi=500)
     ax.text(0.3, 0.3, str("{:,}".format(round(potencial_cosechar_kpi,2))), ha='center', va='center', fontsize=30, color='#9867CB')
@@ -550,22 +510,19 @@ with col2_5:
 
     st.pyplot(fig)
 
-st.text("")
-st.text("")
-st.text("")
 
-st.divider()
 with col4_5:
     st.markdown(f"## Valor económico de la superficie por cosechar:")
     potencial_cosechar2 = df_merge.copy()
-    potencial_cosechar2 = potencial_cosechar2.loc[(potencial_cosechar2['Entidad'] == 'Sonora')&(potencial_cosechar2['Año']==datetime.now().year)&(potencial_cosechar2['Cultivo']==opcion_cultivo)]
+    potencial_cosechar2 = potencial_cosechar2.loc[(potencial_cosechar2['Entidad'] == 'Sonora')&(potencial_cosechar2['Año']==curr_year)&(potencial_cosechar2['Cultivo']==opcion_cultivo)]
     num_meses2 = len(potencial_cosechar2['Mes'].unique())
     rendimiento_promedio2 = potencial_cosechar2['Rendimiento'].sum()/num_meses2
 
-    potencial_cosechar2['potencial_cosechar_kpi2'] = ((potencial_cosechar2['Superficie Sembrada'] - (potencial_cosechar2['Superficie Cosechada']+ potencial_cosechar2['Superficie Siniestrada'])) * rendimiento_promedio) * potencial_cosechar2['Precio Frecuente']
+    potencial_cosechar2['potencial_cosechar_kpi2'] = ((potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum() + potencial_cosechar['Superficie Siniestrada'].sum())) * rendimiento_promedio) * potencial_cosechar2['Precio Frecuente']
+    # potencial_cosechar2['potencial_cosechar_kpi2'] = ((potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum() + potencial_cosechar['Superficie Siniestrada'].sum())) * rendimiento_promedio) * (potencial_cosechar2['Precio Frecuente'].sum() / len(potencial_cosechar2['Precio Frecuente'])) 
+
     
     potencial_cosechar_kpi2 = potencial_cosechar2['potencial_cosechar_kpi2'].sum()
-
     # Convertir a formato de texto con comas separadoras para los miles
     potencial_cosechar_kpi2_text = "{:,.2f}".format(round(float(potencial_cosechar_kpi2), 2))
 
@@ -588,7 +545,7 @@ with col4_5:
 
 
 
-# st.divider()
+st.divider()
 
 col1_3, col2_3 = st.columns(2)
 
@@ -611,7 +568,7 @@ with col1_3:
     fig = px.treemap(df_municipio,
                     path=["Entidad","Municipio"],
                     values="Produccion (%)",
-                    color_discrete_map={'Entidad': "white"},  # Asignar blanco al      
+                    color_discrete_map={'Entidad': "white"},     
                     width=500, height=600
                     )
 
