@@ -4,7 +4,6 @@ import numpy as np
 from PIL import Image
 
 st.title('Red del Banco de Alimentos')
-st.markdown("<span style='font-size: 12px;'>Equipo: Vesna Camile Pivac Alcaraz, Jose Carlos Barreras Maldonado y Luis Ernesto Ortiz Villalon</span>", unsafe_allow_html=True)
 
 body = 'Este proyecto es parte del curso "Ingeniería de Características" de la Maestría en Ciencia de Datos de la Universidad de Sonora. Su motivación principal es contribuir a la Red de Bancos de Alimentos de México (red BAMX) mediante el análisis de datos públicos relacionados con la producción y el mercado de alimentos a nivel nacional. El objetivo final es realizar el "Storytelling" que permita a la red BAMX identificar ventanas de oportunidad para optimizar sus procedimientos en la colecta y redistribución de alimentos.'
 
@@ -31,6 +30,8 @@ Las visualizaciones se diseñan metodológicamente para destacar aspectos releva
 
 # image = Image.open('')
 st.write(body)
+st.markdown("<span style='font-size: 12px;'>Equipo: Vesna Camile Pivac Alcaraz, Jose Carlos Barreras Maldonado y Luis Ernesto Ortiz Villalon</span>", unsafe_allow_html=True)
+
 
 # st.image()
 st.subheader('Descripción del proyecto', divider='rainbow')
