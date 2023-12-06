@@ -62,7 +62,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     df_estados = pd.read_parquet('./data/Estados.parquet')
-    
+    df_estados = df_estados.loc[df_estados['Cultivo']==opcion_cultivo]
     # Calcular la producción total para el cultivo seleccionado en todos los estados
     produccion_total = df_estados['Produccion'].sum()
 
@@ -323,6 +323,8 @@ with col2_1:
 
 
 
+
+
 #-----------------------------------------SECCION 3 -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -371,7 +373,7 @@ with col1_2:
     elif opcion_tiempo == 'Año Actual':
         precio_total_tiempo_txt = ' en el año actual ' + str(datetime.now().year) + '.'
 
-    st.markdown(f'##### La producción total de {opcion_cultivo} en todo México es de {round(precio_total_pais,4)} MDP del cual Sonora ha aportado <span style="color: {color_sonora}">{round(precio_total_son,4)}</span> MDP{precio_total_tiempo_txt}',unsafe_allow_html=True)
+    st.markdown(f'##### La producción total de {opcion_cultivo} en todo México es de {"{:,}".format(round(precio_total_pais,2))} MDP del cual Sonora ha aportado <span style="color: {color_sonora}">{"{:,}".format(round(precio_total_son,2))}</span> MDP{precio_total_tiempo_txt}',unsafe_allow_html=True)
 
 
 
@@ -422,16 +424,6 @@ with col2_2:
         showlegend=False
     )
     tab3.plotly_chart(fig)
-
-    # tab4.subheader("Rendimiento total en millones de pesos a lo largo del tiempo")
-    # fig = px.line(df_merge_valor_produccion, x='Fecha', y='Rendimiento Economico (MDP)', markers=True, line_shape='linear',color_discrete_sequence=['#9867CB'])
-    # fig.update_layout(
-    #     xaxis_title='Fecha',
-    #     yaxis_title='Rendimiento (MDP)',
-    #     xaxis=dict(tickangle=45),
-    #     showlegend=False
-    # )
-    # tab3.plotly_chart(fig)
 
 
 
