@@ -593,5 +593,8 @@ with col2_3:
 
 
 
+st.divider()
+st.markdown("<span style='font-size: 12px; color:#C0B9C9;'>By: Vesna Camile Pivac Alcaraz, Jose Carlos Barreras Maldonado y Luis Ernesto Ortiz Villalon</span>", unsafe_allow_html=True)
+
 
 
