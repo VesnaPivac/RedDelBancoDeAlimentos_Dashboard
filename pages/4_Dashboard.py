@@ -22,6 +22,7 @@ df_merge = pd.read_parquet('./data/SIAP_SNIIM_preprocessed.parquet')
 # curr_year = datetime.now().year
 
 curr_year = datetime.now().year
+years = df_merge['Año'].unique()
 # tiempos = ['Año Actual', 'Ultimos 3 años','Historico']
 # opcion_tiempo = st.selectbox('Periodo:', tiempos, index=0,  placeholder="Choose an option")
 # tiempos_dict = {'Año Actual':datetime.now().year,'Ultimos 3 años':[datetime.now().year,datetime.now().year-1,datetime.now().year-2]}
@@ -31,6 +32,7 @@ curr_year = datetime.now().year
 #     df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')&(df_merge['Año'].isin(tiempos_dict[opcion_tiempo]))]
 # elif(opcion_tiempo == 'Año Actual'):
 opcion_tiempo = 'Año Actual'
+tiempos_dict = curr_year
 df_merge_cultivo = df_merge.loc[(df_merge['Entidad']=='Sonora')&(df_merge['Año']==curr_year)]
     
 # Calcular la suma de la producción por 'Cultivo'
@@ -51,7 +53,9 @@ elif(opcion_tiempo == 'Ultimos 3 años'):
     cultivo_seleccionado = df_merge[(df_merge['Cultivo'] == opcion_cultivo)&(df_merge['Año'].isin(tiempos_dict[opcion_tiempo]))]
 elif(opcion_tiempo == 'Año Actual'):
     cultivo_seleccionado = df_merge[(df_merge['Cultivo'] == opcion_cultivo)&(df_merge['Año']==curr_year)]
-    
+
+color_mexico = '#272F7C'
+color_sonora = '#9867CB'
     
 # Primeras dos columnas
 col1, col2 = st.columns(2)
@@ -80,7 +84,7 @@ with col1:
                      })
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
-    st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: #272F7C">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color: #9867CB">{str("{:,}".format(round(prd_son,2)))}</span> toneladas del total.',unsafe_allow_html=True)
+    st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: {color_mexico}">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color:{color_sonora}">{str("{:,}".format(round(prd_son,2)))}</span> toneladas del total.',unsafe_allow_html=True)
     # Crear un DataFrame con los datos de producción total y en Sonora
     data = {
         'Entidad': ['México', 'Sonora'],
@@ -89,7 +93,7 @@ with col1:
     df = pd.DataFrame(data)
 
     # Definir colores para México (gris) y Sonora (morado)
-    colors = {'México': '#272F7C', 'Sonora': '#9867CB'}
+    colors = {'México': color_mexico, 'Sonora': color_sonora}
 
     # Graficar utilizando Plotly Express y asignar colores específicos a cada barra
     fig = px.bar(df, x='Entidad', y='Produccion', text='Produccion',
@@ -179,9 +183,6 @@ with col2:
 col1_1, col2_1 = st.columns(2)
 
 with col1_1:
-    st.markdown(f"## Principales Entidades Contribuyentes a la Producción de {opcion_cultivo}")
-    st.text(f"Porcentaje con respecto a la producción total")
-
     df = pd.read_parquet('./data/Estados.parquet')
      
     if opcion_tiempo == 'Año Actual':
@@ -228,19 +229,10 @@ with col1_1:
         top3.loc[top3['Entidad'] == 'Sonora', 'Color'] = 'purple'  # Asignar morado a 'Sonora' en el top 3
         top3.loc[top3.index[-1], 'Color'] = 'blue'  # Asignar azul al top 1
 
-
-    # if len(top3) == 3:
-    #     colors = ['#9867CB' if top3.iloc[0]['Entidad'] == 'Sonora' else 'gray',
-    #           '#9867CB' if top3.iloc[1]['Entidad'] == 'Sonora' else 'gray',
-    #           '#81B4E3' if top3.iloc[2]['Entidad'] == 'Sonora' else '#9867CB']
-    # else:  # Si son 4 valores en el DataFrame
-    #     max_value = top3['Produccion'].max()
-    #     colors = ['#9867CB' if row['Entidad'] == 'Sonora' else ('#81B4E3' if row['Produccion'] == max_value else 'gray') for _, row in top3.iterrows()]
-
     # Crear el gráfico con Plotly Express
     fig = px.bar(top3, x='Produccion', y='Entidad', orientation='h', color='Color',
                  text=top3['Porcentaje'],
-                color_discrete_map={'gray': 'gray', 'purple': '#9867CB', 'blue': '#81B4E3'},
+                color_discrete_map={'gray': 'gray', 'purple': color_sonora, 'blue': '#81B4E3'},
                 labels={'Produccion': 'Producción (Toneladas)', 'Entidad': 'Entidad'})
     
     fig.update_layout(showlegend=False)
@@ -249,37 +241,25 @@ with col1_1:
     fig.update_traces(textposition='outside')  # Mostrar el texto fuera de las barras
     fig.update_layout(xaxis=dict(title='Producción', showgrid=True, gridcolor='lightgray'))  # Ajustar la apariencia del eje X
 
-
-        # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig)
-
     mayor_productor = top3.iloc[-1]['Entidad']
+
+    st.markdown(f"## Principales Entidades Contribuyentes a la Producción de {opcion_cultivo}")
+    if top3.iloc[0]['Entidad'] == 'Sonora':
+        st.text(f"Sonora y los tres principales productores.")
+
+
+    # Mostrar el gráfico en Streamlit
+    st.plotly_chart(fig)
     
-    # # Mostrar el gráfico en Streamlit
-    # st.plotly_chart(fig)
-
-    # # Configurar colores de las barras
-    # fig.update_traces(marker=dict(color=colors))
-    # fig.update_traces(textposition='outside', textfont=dict(color='black'))
-    # fig.update_layout(height=300, width=400)
-
-    # # Mostrar el gráfico en Streamlit
-    # st.plotly_chart(fig,use_container_width=True) 
-
-    # porcentaje_sonora = pct_mexico_son_text
-    # # if filtro_sonora.any():
 
     porcentaje_sonora = float(top3.loc[top3['Entidad'] == 'Sonora', 'Porcentaje'].str.rstrip('%').iloc[0])
     if mayor_productor == 'Sonora':
-        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con una aportación del <span style="color: #9867CB">{str(porcentaje_sonora) + "%"}</span> de la producción total del país',unsafe_allow_html=True)
+        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con una aportación del <span style="color: {color_sonora}">{str(porcentaje_sonora) + "%"}</span> de la producción total del país',unsafe_allow_html=True)
     else:
         porcentaje_top1 = float(top3.loc[top3['Entidad'] == mayor_productor, 'Porcentaje'].str.rstrip('%').iloc[0])
-        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{str(porcentaje_top1)+"%"}</span> de la producción total del país mientras que Sonora aporta el <span style="color: #9867CB">{str(porcentaje_sonora)+"%"}</span> del total de producción.',unsafe_allow_html=True)
-    # # else:
-    # #     porcentaje_sonora = produccion_total/(100*prd_son)
-    # #     st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{porcentaje_top1}</span> de la producción total del país.',unsafe_allow_html=True)
+        st.markdown(f'##### {mayor_productor} es el mayor productor de {opcion_cultivo} con <span style="color: #81B4E3">{str(porcentaje_top1)+"%"}</span> de la producción total del país mientras que Sonora aporta el <span style="color: {color_sonora}">{str(porcentaje_sonora)+"%"}</span> del total de producción.',unsafe_allow_html=True)
 
-
+    st.markdown("<span style='font-size: 12px;'>* Porcentaje con respecto a la producción total</span>", unsafe_allow_html=True)
 
 
 with col2_1:
@@ -311,6 +291,7 @@ with col2_1:
     # Crear una paleta de colores de blanco a púrpura (o cualquier color deseado)
     colores = plt.cm.Blues(produccion_normalizada)
 
+    # GRAFICA -------------------------------------------------------------------------------------------------------------
     # Crear el gráfico de barras con colores proporcionales a la producción
     fig, ax = plt.subplots(figsize=(10, 6))
     bars = ax.bar(produccion_por_mes['Mes'], produccion_por_mes['Produccion'], color=colores)
@@ -366,11 +347,6 @@ with col1_2:
 
     # Función para resaltar la fila de 'Sonora'
     def resaltar_sonora(row):
-        # if row['Estado'] == 'Sonora':
-        #     return ['background-color: #E8D7FA'] * len(row)
-        # else:
-        #     return [''] * len(row)
-
         if row.name == 'Sonora':  # Utiliza row.name para referenciar el índice
             return ['background-color: #E8D7FA'] * len(row)
         else:
@@ -391,7 +367,7 @@ with col1_2:
     elif opcion_tiempo == 'Año Actual':
         precio_total_tiempo_txt = ' en el año actual ' + str(datetime.now().year) + '.'
 
-    st.markdown(f'##### La producción total de {opcion_cultivo} en todo México es de {round(precio_total_pais,4)} MDP del cual Sonora ha aportado <span style="color: #9867CB">{round(precio_total_son,4)}</span> MDP{precio_total_tiempo_txt}',unsafe_allow_html=True)
+    st.markdown(f'##### La producción total de {opcion_cultivo} en todo México es de {round(precio_total_pais,4)} MDP del cual Sonora ha aportado <span style="color: {color_sonora}">{round(precio_total_son,4)}</span> MDP{precio_total_tiempo_txt}',unsafe_allow_html=True)
 
 
 
@@ -467,7 +443,7 @@ col1_4, col2_4,col3_4 = st.columns([2,5,2])
 with col2_4:
     st.markdown(f'## Superficie Sembrada, Cosechada y Siniestrada de {opcion_cultivo} en Sonora')
     #Cultivo y año    
-    sembrada_vs_cosechada = cultivo_seleccionado.loc[cultivo_seleccionado['Entidad'] == 'Sonora']
+    sembrada_vs_cosechada = df_merge.loc[(df_merge['Entidad'] == 'Sonora')&(df_merge['Cultivo']==opcion_cultivo)]
   
     sembrada_vs_cosechada['Mes'] = sembrada_vs_cosechada['Mes'].map(meses)
     sembrada_vs_cosechada['Fecha'] = pd.to_datetime(sembrada_vs_cosechada['Año'].astype(str) + '-' + sembrada_vs_cosechada['Mes'].astype(str))
