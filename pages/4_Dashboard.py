@@ -62,7 +62,8 @@ col1, col2 = st.columns(2)
 
 with col1:
     df_estados = pd.read_parquet('./data/Estados.parquet')
-    # df_estados = df_estados.loc[df_estados['Cultivo']==opcion_cultivo]
+    df_estados = df_estados.loc[df_estados['Cultivo']==opcion_cultivo]
+    
     # Calcular la producción total para el cultivo seleccionado en todos los estados
     produccion_total = df_estados['Produccion'].sum()
 
