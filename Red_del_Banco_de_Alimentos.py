@@ -30,8 +30,6 @@ Las visualizaciones se diseñan metodológicamente para destacar aspectos releva
 
 # image = Image.open('')
 st.write(body)
-st.markdown("<span style='font-size: 12px;'>Equipo: Vesna Camile Pivac Alcaraz, Jose Carlos Barreras Maldonado y Luis Ernesto Ortiz Villalon</span>", unsafe_allow_html=True)
-
 
 # st.image()
 st.subheader('Descripción del proyecto', divider='rainbow')
