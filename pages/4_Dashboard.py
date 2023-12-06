@@ -267,7 +267,8 @@ with col2_1:
     
     # Definir el orden deseado de los meses
     orden_meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-    produccion_por_mes = cultivo_seleccionado.groupby('Mes')['Produccion'].sum().reset_index()
+    cultivo_seleccionado_sonora = cultivo_seleccionado.loc[cultivo_seleccionado['Entidad']=='Sonora']
+    produccion_por_mes = cultivo_seleccionado_sonora.groupby('Mes')['Produccion'].sum().reset_index()
 
     # Convertir la columna 'Mes' a tipo Categorical con el orden deseado
     produccion_por_mes['Mes'] = pd.Categorical(produccion_por_mes['Mes'], categories=orden_meses, ordered=True)
@@ -289,7 +290,7 @@ with col2_1:
     produccion_normalizada = (produccion_por_mes['Produccion'] - produccion_por_mes['Produccion'].min()) / (produccion_por_mes['Produccion'].max() - produccion_por_mes['Produccion'].min())
 
     # Crear una paleta de colores de blanco a púrpura (o cualquier color deseado)
-    colores = plt.cm.Blues(produccion_normalizada)
+    colores = plt.cm.Purples(produccion_normalizada)
 
     # GRAFICA -------------------------------------------------------------------------------------------------------------
     # Crear el gráfico de barras con colores proporcionales a la producción
@@ -311,10 +312,13 @@ with col2_1:
                     textcoords='offset points', ha='center', va='bottom')
 
     # Mostrar el gráfico en Streamlit
-    st.markdown("## Producción Nacional (%)")
+    st.markdown("## Producción Estatal de Sonora (%)")
     st.markdown(f"###### La mayor producción de {opcion_cultivo} se obtiene de los meses de {top_3_meses[0]}, {top_3_meses[1]} y {top_3_meses[2]}")
 
     st.pyplot(fig)
+
+    st.markdown("<span style='font-size: 12px;'>* Porcentaje con respecto a la producción total de Sonora</span>", unsafe_allow_html=True)
+
 
 
 
@@ -544,6 +548,7 @@ with col1_3:
         
     # Filtramos para solo con valores de Produccion (%) mayores a cero para poder usar una escala de colores continua en el treemap
     df_municipio = df_municipio[df_municipio['Produccion (%)'] > 0]
+    custom_color_scale = ["#F2EBFE", px.colors.sequential.Purples[-1]] 
 
     # Crear el treemap con plotly express
     fig = px.treemap(df_municipio,
@@ -556,6 +561,7 @@ with col1_3:
     fig.update_traces(root_color="whitesmoke")
 
     st.plotly_chart(fig)
+
 
 with col2_3:
     st.markdown(f'## Superficie Sembrada, Cosechada y Siniestrada de {opcion_cultivo} por municipio')
@@ -593,8 +599,8 @@ with col2_3:
 
 
 
+
+
 st.divider()
 st.markdown("<span style='font-size: 12px; color:#C0B9C9;'>By: Vesna Camile Pivac Alcaraz, Jose Carlos Barreras Maldonado y Luis Ernesto Ortiz Villalon</span>", unsafe_allow_html=True)
-
-
 
