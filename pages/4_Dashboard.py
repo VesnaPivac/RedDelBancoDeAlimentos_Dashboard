@@ -63,33 +63,22 @@ col1, col2 = st.columns(2)
 with col1:
     df_estados = pd.read_parquet('./data/Estados.parquet')
     df_estados = df_estados.loc[df_estados['Cultivo']==opcion_cultivo]
-    
     # Calcular la producción total para el cultivo seleccionado en todos los estados
     produccion_total = df_estados['Produccion'].sum()
 
     # Calcular la producción total por entidad y ordenar de mayor a menor
     produccion_por_entidad = df_estados.groupby('Entidad')['Produccion'].sum().sort_values(ascending=False)
-
-    # Seleccionar solo los primeros 3 elementos con mayor producción
-    # top_3_entidades = produccion_por_entidad.head(3) 
-
     
     prd_son = produccion_por_entidad['Sonora']
     pct_mexico_son = (prd_son * 100)/produccion_total
     pct_mexico_son_text = str(round(pct_mexico_son,4))+"%"
-
-    data_son = pd.DataFrame({
-                    'Entidad': ['Sonora'],
-                    'Produccion': [prd_son],
-                    'Produccion (%)': [pct_mexico_son]
-                     })
 
     st.subheader(f'Producción Total de {opcion_cultivo}')
     st.markdown(f'##### Producción total de {opcion_cultivo} en México de <span style="color: {color_mexico}">{str("{:,}".format(round(produccion_total,2)))}</span> toneladas del cual Sonora aporta <span style="color:{color_sonora}">{str("{:,}".format(round(prd_son,2)))}</span> toneladas del total.',unsafe_allow_html=True)
     # Crear un DataFrame con los datos de producción total y en Sonora
     data = {
         'Entidad': ['México', 'Sonora'],
-        'Produccion': [produccion_total, prd_son]
+        'Produccion': [round(produccion_total,2), round(prd_son,2)]
     }
     df = pd.DataFrame(data)
 
@@ -515,8 +504,6 @@ with col4_5:
 
 
 
-
-
 #-----------------------------------------SECCION 6 -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -566,21 +553,6 @@ with col2_3:
     opcion_mun = st.selectbox('Municipio:', municipio_menu, index=0,  placeholder="Choose an option")
 
     sembrada_vs_cosechada = sembrada_vs_cosechada.loc[sembrada_vs_cosechada['Municipio']==opcion_mun]
-        
-    # # Graficar con Plotly Express
-    # fig = px.line(sembrada_vs_cosechada, x='Año', y=['Superficie Siniestrada', 'Superficie Sembrada','Superficie Cosechada'], 
-    #             labels={'Fecha': 'Fecha', 'value': 'Superficie (Hectáreas)'})
-
-    # # Configuración para mostrar solo años enteros en el eje x
-    # fig.update_layout(xaxis_title='Fecha', yaxis_title='Superficie (Hectáreas)', legend_title='Tipo de Superficie')
-    # fig.update_xaxes(tickmode='linear', tick0=sembrada_vs_cosechada['Año'].min(), dtick=1)  # Configuración para mostrar solo enteros en el eje x
-
-    # # Actualizar el modo de las líneas a mostrar
-    # fig.update_traces(mode='lines')
-
-    # # Mostrar la figura en Streamlit
-    # st.plotly_chart(fig)
-
         
     fig = px.bar(sembrada_vs_cosechada, x='Año', y=['Superficie Siniestrada', 'Superficie Sembrada','Superficie Cosechada'], 
                 labels={'Fecha': 'Fecha', 'value': 'Superficie (Hectarias)'}, barmode='group')
