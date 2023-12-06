@@ -78,10 +78,10 @@ with col1:
     # Crear un DataFrame con los datos de producción total y en Sonora
     data = {
         'Entidad': ['México', 'Sonora'],
-        'Produccion': [round(produccion_total,2), round(prd_son,2)]
+        'Produccion': [produccion_total, prd_son]
     }
     df = pd.DataFrame(data)
-
+    df['Produccion'] = round(df['Produccion'],2)
     # Definir colores para México (gris) y Sonora (morado)
     colors = {'México': color_mexico, 'Sonora': color_sonora}
 
