@@ -223,12 +223,14 @@ with col1_1:
     fig = px.bar(top3, x='Produccion', y='Entidad', orientation='h', color='Color',
                  text=top3['Porcentaje'],
                 color_discrete_map={'gray': 'gray', 'purple': color_sonora, 'blue': '#81B4E3'},
-                labels={'Produccion': 'Producción (Toneladas)', 'Entidad': 'Entidad'})
+                labels={'Produccion': 'Producción (Toneladas)', 'Entidad': 'Entidad'},
+                height=400, width=600)
     
     fig.update_layout(showlegend=False)
     
     # Personalizar el diseño de texto (posición y formato)
-    fig.update_traces(textposition='outside')  # Mostrar el texto fuera de las barras
+    fig.update_traces(textposition='inside',insidetextanchor='end')  # Mostrar el texto fuera de las barras
+    fig.update_traces(textfont=dict(color='white'))
     fig.update_layout(xaxis=dict(title='Producción', showgrid=True, gridcolor='lightgray'))  # Ajustar la apariencia del eje X
 
     mayor_productor = top3.iloc[-1]['Entidad']
@@ -483,9 +485,12 @@ with col4_5:
     potencial_cosechar2 = df_merge.copy()
     potencial_cosechar2 = potencial_cosechar2.loc[(potencial_cosechar2['Entidad'] == 'Sonora')&(potencial_cosechar2['Año']==curr_year)&(potencial_cosechar2['Cultivo']==opcion_cultivo)]
     num_meses2 = len(potencial_cosechar2['Mes'].unique())
-    rendimiento_promedio2 = potencial_cosechar2['Rendimiento'].sum()/num_meses2
+    rendimiento_promedio2 = potencial_cosechar2['Rendimiento'].sum()/len(potencial_cosechar2['Rendimiento'])
+    precio_frecuente = potencial_cosechar2['Precio Frecuente'].sum()/len(potencial_cosechar2['Precio Frecuente'])
 
-    potencial_cosechar2['potencial_cosechar_kpi2'] = ((potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum() + potencial_cosechar['Superficie Siniestrada'].sum())) * rendimiento_promedio) * potencial_cosechar2['Precio Frecuente']
+    # st.text(((potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum() + potencial_cosechar['Superficie Siniestrada'].sum())))*precio_frecuente)
+
+    potencial_cosechar2['potencial_cosechar_kpi2'] = (potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum() + potencial_cosechar['Superficie Siniestrada'].sum())) * precio_frecuente
     # potencial_cosechar2['potencial_cosechar_kpi2'] = ((potencial_cosechar['Superficie Sembrada'].sum() - (potencial_cosechar['Superficie Cosechada'].sum() + potencial_cosechar['Superficie Siniestrada'].sum())) * rendimiento_promedio) * (potencial_cosechar2['Precio Frecuente'].sum() / len(potencial_cosechar2['Precio Frecuente'])) 
 
     
